@@ -14,7 +14,7 @@ setup(
     packages=find_packages(exclude=["test"]),
     install_requires=[
         # Used to ensure Black code style is checked on pre-commit
-        "pre-commit==1.16.1"
+        "pre-commit==1.17.0"
     ],
     extras_require={
         "testing": [
