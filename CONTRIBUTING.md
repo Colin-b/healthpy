@@ -41,6 +41,7 @@ Before creating an issue please make sure that it was not already reported.
 1) Create a new branch based on *development* branch.
 2) Add your changes.
 3) Follow [Black](https://black.readthedocs.io/en/stable/) code formatting.
+    * Install pre-commit python module using pip: **pip install pre-commit**
     * To add the pre-commit hook, after the installation run: **pre-commit install**
 4) Add at least one test case.
     * Unless it is an internal refactoring request or a documentation update.
