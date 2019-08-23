@@ -12,16 +12,13 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=["test"]),
-    install_requires=[
-        # Used to ensure Black code style is checked on pre-commit
-        "pre-commit==1.17.0"
-    ],
+    install_requires=[],
     extras_require={
         "testing": [
             # Used to mock HTTP responses
-            "responses==0.10.6",
+            "pytest-responses==0.4.0",
             # Used to check redis health
-            "redis==3.2.1",
+            "redis==3.3.8",
         ]
     },
     python_requires=">=3.6",
