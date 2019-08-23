@@ -1,140 +1,120 @@
-import unittest
-import unittest.mock as mock
-
 import redis
 
-from healthpy.redis import check
+import healthpy.redis
 
 
-class UTCDateTimeMock:
+class DateTimeMock:
     @staticmethod
-    def isoformat():
-        return "2018-10-11T15:05:05.663979"
+    def utcnow():
+        class UTCDateTimeMock:
+            @staticmethod
+            def isoformat():
+                return "2018-10-11T15:05:05.663979"
+
+        return UTCDateTimeMock
 
 
-class RedisHealthTest(unittest.TestCase):
-    @mock.patch.object(redis.Redis, "ping", return_value=1)
-    @mock.patch.object(redis.Redis, "keys", return_value=["local"])
-    @mock.patch("healthpy.redis.datetime")
-    def test_redis_health_details_ok(self, datetime_mock, ping_mock, keys_mock):
-        datetime_mock.utcnow = mock.Mock(return_value=UTCDateTimeMock)
-        status, details = check("redis://test_url", "local_my_host")
-        self.assertEqual(status, "pass")
-        self.assertEqual(
-            details,
-            {
-                "redis:ping": {
-                    "componentType": "component",
-                    "observedValue": "local_my_host can be found.",
-                    "status": "pass",
-                    "time": "2018-10-11T15:05:05.663979",
-                }
-            },
-        )
+def test_redis_health_details_ok(monkeypatch):
+    monkeypatch.setattr(redis.Redis, "ping", lambda *args: 1)
+    monkeypatch.setattr(redis.Redis, "keys", lambda *args: ["local"])
+    monkeypatch.setattr(healthpy.redis, "datetime", DateTimeMock)
 
-    @mock.patch.object(redis.Redis, "ping")
-    @mock.patch("healthpy.redis.datetime")
-    def test_redis_health_details_cannot_connect_to_redis(
-        self, datetime_mock, ping_mock
-    ):
-        datetime_mock.utcnow = mock.Mock(return_value=UTCDateTimeMock)
-        ping_mock.side_effect = redis.exceptions.ConnectionError("Test message")
+    status, details = healthpy.redis.check("redis://test_url", "local_my_host")
+    assert status == "pass"
+    assert details == {
+        "redis:ping": {
+            "componentType": "component",
+            "observedValue": "local_my_host can be found.",
+            "status": "pass",
+            "time": "2018-10-11T15:05:05.663979",
+        }
+    }
 
-        status, details = check("redis://test_url", "")
-        self.assertEqual(status, "fail")
-        self.assertEqual(
-            details,
-            {
-                "redis:ping": {
-                    "componentType": "component",
-                    "status": "fail",
-                    "time": "2018-10-11T15:05:05.663979",
-                    "output": "Test message",
-                }
-            },
-        )
 
-    @mock.patch.object(redis.Redis, "from_url")
-    @mock.patch("healthpy.redis.datetime")
-    def test_redis_health_details_cannot_retrieve_url(
-        self, datetime_mock, from_url_mock
-    ):
-        datetime_mock.utcnow = mock.Mock(return_value=UTCDateTimeMock)
-        from_url_mock.side_effect = redis.exceptions.ConnectionError("Test message")
+def test_redis_health_details_cannot_connect_to_redis(monkeypatch):
+    def fail_ping(*args):
+        raise redis.exceptions.ConnectionError("Test message")
 
-        status, details = check("redis://test_url", "")
-        self.assertEqual(status, "fail")
-        self.assertEqual(
-            details,
-            {
-                "redis:ping": {
-                    "componentType": "component",
-                    "status": "fail",
-                    "time": "2018-10-11T15:05:05.663979",
-                    "output": "Test message",
-                }
-            },
-        )
+    monkeypatch.setattr(redis.Redis, "ping", fail_ping)
+    monkeypatch.setattr(healthpy.redis, "datetime", DateTimeMock)
 
-    @mock.patch.object(redis.Redis, "ping", return_value=1)
-    @mock.patch.object(redis.Redis, "keys", return_value=b"Those are bytes")
-    @mock.patch("healthpy.redis.datetime")
-    def test_redis_health_details_cannot_retrieve_keys_as_list(
-        self, datetime_mock, ping_mock, keys_mock
-    ):
-        datetime_mock.utcnow = mock.Mock(return_value=UTCDateTimeMock)
-        status, details = check("redis://test_url", "local_my_host")
-        self.assertEqual(status, "fail")
-        self.assertEqual(
-            details,
-            {
-                "redis:ping": {
-                    "componentType": "component",
-                    "status": "fail",
-                    "time": "2018-10-11T15:05:05.663979",
-                    "output": "local_my_host cannot be found in b'Those " "are bytes'",
-                }
-            },
-        )
+    status, details = healthpy.redis.check("redis://test_url", "")
+    assert status == "fail"
+    assert details == {
+        "redis:ping": {
+            "componentType": "component",
+            "status": "fail",
+            "time": "2018-10-11T15:05:05.663979",
+            "output": "Test message",
+        }
+    }
 
-    @mock.patch.object(redis.Redis, "ping", return_value=1)
-    @mock.patch.object(redis.Redis, "keys", return_value=[b"local"])
-    @mock.patch("healthpy.redis.datetime")
-    def test_redis_health_details_retrieve_keys_as_bytes_list(
-        self, datetime_mock, ping_mock, keys_mock
-    ):
-        datetime_mock.utcnow = mock.Mock(return_value=UTCDateTimeMock)
-        status, details = check("redis://test_url", "local_my_host")
-        self.assertEqual(status, "pass")
-        self.assertEqual(
-            details,
-            {
-                "redis:ping": {
-                    "componentType": "component",
-                    "status": "pass",
-                    "time": "2018-10-11T15:05:05.663979",
-                    "observedValue": "local_my_host can be found.",
-                }
-            },
-        )
 
-    @mock.patch.object(redis.Redis, "ping", return_value=1)
-    @mock.patch.object(redis.Redis, "keys", return_value=[])
-    @mock.patch("healthpy.redis.datetime")
-    def test_redis_health_details_missing_key(
-        self, datetime_mock, ping_mock, keys_mock
-    ):
-        datetime_mock.utcnow = mock.Mock(return_value=UTCDateTimeMock)
-        status, details = check("redis://test_url", "local_my_host")
-        self.assertEqual(status, "fail")
-        self.assertEqual(
-            details,
-            {
-                "redis:ping": {
-                    "componentType": "component",
-                    "status": "fail",
-                    "time": "2018-10-11T15:05:05.663979",
-                    "output": "local_my_host cannot be found in []",
-                }
-            },
-        )
+def test_redis_health_details_cannot_retrieve_url(monkeypatch):
+    def fail_from_url(*args):
+        raise redis.exceptions.ConnectionError("Test message")
+
+    monkeypatch.setattr(redis.Redis, "from_url", fail_from_url)
+    monkeypatch.setattr(healthpy.redis, "datetime", DateTimeMock)
+
+    status, details = healthpy.redis.check("redis://test_url", "")
+    assert status == "fail"
+    assert details == {
+        "redis:ping": {
+            "componentType": "component",
+            "status": "fail",
+            "time": "2018-10-11T15:05:05.663979",
+            "output": "Test message",
+        }
+    }
+
+
+def test_redis_health_details_cannot_retrieve_keys_as_list(monkeypatch):
+    monkeypatch.setattr(redis.Redis, "ping", lambda *args: 1)
+    monkeypatch.setattr(redis.Redis, "keys", lambda *args: b"Those are bytes")
+    monkeypatch.setattr(healthpy.redis, "datetime", DateTimeMock)
+
+    status, details = healthpy.redis.check("redis://test_url", "local_my_host")
+    assert status == "fail"
+    assert details == {
+        "redis:ping": {
+            "componentType": "component",
+            "status": "fail",
+            "time": "2018-10-11T15:05:05.663979",
+            "output": "local_my_host cannot be found in b'Those " "are bytes'",
+        }
+    }
+
+
+def test_redis_health_details_retrieve_keys_as_bytes_list(monkeypatch):
+    monkeypatch.setattr(redis.Redis, "ping", lambda *args: 1)
+    monkeypatch.setattr(redis.Redis, "keys", lambda *args: [b"local"])
+    monkeypatch.setattr(healthpy.redis, "datetime", DateTimeMock)
+
+    status, details = healthpy.redis.check("redis://test_url", "local_my_host")
+    assert status == "pass"
+    assert details == {
+        "redis:ping": {
+            "componentType": "component",
+            "status": "pass",
+            "time": "2018-10-11T15:05:05.663979",
+            "observedValue": "local_my_host can be found.",
+        }
+    }
+
+
+def test_redis_health_details_missing_key(monkeypatch):
+    monkeypatch.setattr(redis.Redis, "ping", lambda *args: 1)
+    monkeypatch.setattr(redis.Redis, "keys", lambda *args: [])
+    monkeypatch.setattr(healthpy.redis, "datetime", DateTimeMock)
+
+    status, details = healthpy.redis.check("redis://test_url", "local_my_host")
+    assert status == "fail"
+    assert details == {
+        "redis:ping": {
+            "componentType": "component",
+            "status": "fail",
+            "time": "2018-10-11T15:05:05.663979",
+            "output": "local_my_host cannot be found in []",
+        }
+    }
