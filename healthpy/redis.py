@@ -2,15 +2,17 @@ from datetime import datetime
 
 import redis
 
+import healthpy
+
 
 def check(url: str, key_pattern: str) -> (str, dict):
     """
-    Return Health details for redis keys.
+    Return Health "Checks object" for redis keys.
 
     :param url: Redis URL
     :param key_pattern: Pattern to look for in keys.
-    :return: A tuple with a string providing the status (pass, warn, fail) and the details.
-    Details are based on https://inadarei.github.io/rfc-healthcheck/
+    :return: A tuple with a string providing the status (amongst healthpy.*_status variable) and the "Checks object".
+    Based on https://inadarei.github.io/rfc-healthcheck/
     """
     try:
         redis_server = redis.Redis.from_url(url)
@@ -20,11 +22,11 @@ def check(url: str, key_pattern: str) -> (str, dict):
 
         if not keys or not isinstance(keys, list):
             return (
-                "fail",
+                healthpy.fail_status,
                 {
                     "redis:ping": {
                         "componentType": "component",
-                        "status": "fail",
+                        "status": healthpy.fail_status,
                         "time": datetime.utcnow().isoformat(),
                         "output": f"{key_pattern} cannot be found in {keys}",
                     }
@@ -32,23 +34,23 @@ def check(url: str, key_pattern: str) -> (str, dict):
             )
 
         return (
-            "pass",
+            healthpy.pass_status,
             {
                 "redis:ping": {
                     "componentType": "component",
                     "observedValue": f"{key_pattern} can be found.",
-                    "status": "pass",
+                    "status": healthpy.pass_status,
                     "time": datetime.utcnow().isoformat(),
                 }
             },
         )
     except Exception as e:
         return (
-            "fail",
+            healthpy.fail_status,
             {
                 "redis:ping": {
                     "componentType": "component",
-                    "status": "fail",
+                    "status": healthpy.fail_status,
                     "time": datetime.utcnow().isoformat(),
                     "output": str(e),
                 }

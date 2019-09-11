@@ -23,8 +23,8 @@ setup(
     },
     python_requires=">=3.6",
     project_urls={
-        "Changelog": "https://github.tools.digital.engie.com/GEM-Py/healthpy/blob/master/CHANGELOG.md",
-        "Issues": "https://github.tools.digital.engie.com/GEM-Py/healthpy/issues",
+        "Changelog": "https://github.tools.digital.engie.com/gempy/healthpy/blob/master/CHANGELOG.md",
+        "Issues": "https://github.tools.digital.engie.com/gempy/healthpy/issues",
     },
     license="MIT",
     classifiers=[
