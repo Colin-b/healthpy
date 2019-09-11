@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2019-09-11
+### Added
+- Expose pass_status, warn_status, fail_status variables to allow tweaking of the value sent in those cases.
+
+### Changed
+- Update to RFC draft version 3.
+
 ## [1.2.0] - 2019-08-23
 ### Changed
 - Switch to pytest.
@@ -20,7 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.tools.digital.engie.com/GEM-Py/healthpy/compare/v1.2.0...HEAD
-[1.2.0]: https://github.tools.digital.engie.com/GEM-Py/healthpy/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.tools.digital.engie.com/GEM-Py/healthpy/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.tools.digital.engie.com/GEM-Py/healthpy/releases/tag/v1.0.0
+[Unreleased]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.3.0...HEAD
+[1.3.0]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.tools.digital.engie.com/gempy/healthpy/releases/tag/v1.0.0

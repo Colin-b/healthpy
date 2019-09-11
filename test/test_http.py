@@ -31,6 +31,22 @@ def test_exception_health_check(monkeypatch):
     ) == healthpy.http.check("test", "http://test/health")
 
 
+def test_exception_health_check_with_custom_status(monkeypatch):
+    monkeypatch.setattr(healthpy.http, "datetime", DateTimeMock)
+    monkeypatch.setattr(healthpy, "fail_status", "custom failure")
+    assert (
+        "custom failure",
+        {
+            "test:health": {
+                "componentType": "http://test/health",
+                "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
+                "status": "custom failure",
+                "time": "2018-10-11T15:05:05.663979",
+            }
+        },
+    ) == healthpy.http.check("test", "http://test/health")
+
+
 def test_exception_health_check_as_warn(monkeypatch):
     monkeypatch.setattr(healthpy.http, "datetime", DateTimeMock)
     assert (
@@ -44,6 +60,25 @@ def test_exception_health_check_as_warn(monkeypatch):
             }
         },
     ) == healthpy.http.check("test", "http://test/health", failure_status="warn")
+
+
+def test_exception_health_check_as_warn_even_with_custom_status(monkeypatch):
+    monkeypatch.setattr(healthpy, "fail_status", "custom failure")
+    monkeypatch.setattr(healthpy, "warn_status", "custom warning")
+    monkeypatch.setattr(healthpy.http, "datetime", DateTimeMock)
+    assert (
+        "warn provided",
+        {
+            "test:health": {
+                "componentType": "http://test/health",
+                "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
+                "status": "warn provided",
+                "time": "2018-10-11T15:05:05.663979",
+            }
+        },
+    ) == healthpy.http.check(
+        "test", "http://test/health", failure_status="warn provided"
+    )
 
 
 def test_error_health_check(monkeypatch):
@@ -171,6 +206,25 @@ def test_pass_status_custom_health_check_pass(monkeypatch):
     ) == healthpy.http.check("test", "http://test/status", lambda resp: "pass")
 
 
+def test_pass_status_custom_health_check_with_custom_pass_status(monkeypatch):
+    monkeypatch.setattr(healthpy.http, "datetime", DateTimeMock)
+    monkeypatch.setattr(healthpy, "pass_status", "custom pass")
+    responses.add(
+        url="http://test/status", method=responses.GET, status=200, body="pong"
+    )
+    assert (
+        "pass",
+        {
+            "test:health": {
+                "componentType": "http://test/status",
+                "observedValue": "pong",
+                "status": "pass",
+                "time": "2018-10-11T15:05:05.663979",
+            }
+        },
+    ) == healthpy.http.check("test", "http://test/status", lambda resp: "pass")
+
+
 def test_pass_status_custom_health_check_with_default_extractor(monkeypatch):
     monkeypatch.setattr(healthpy.http, "datetime", DateTimeMock)
     responses.add(
@@ -183,6 +237,27 @@ def test_pass_status_custom_health_check_with_default_extractor(monkeypatch):
                 "componentType": "http://test/status",
                 "observedValue": "pong",
                 "status": "pass",
+                "time": "2018-10-11T15:05:05.663979",
+            }
+        },
+    ) == healthpy.http.check("test", "http://test/status")
+
+
+def test_pass_status_custom_health_check_with_default_extractor_and_custom_pass_status(
+    monkeypatch,
+):
+    monkeypatch.setattr(healthpy.http, "datetime", DateTimeMock)
+    monkeypatch.setattr(healthpy, "pass_status", "custom pass")
+    responses.add(
+        url="http://test/status", method=responses.GET, status=200, body="pong"
+    )
+    assert (
+        "custom pass",
+        {
+            "test:health": {
+                "componentType": "http://test/status",
+                "observedValue": "pong",
+                "status": "custom pass",
                 "time": "2018-10-11T15:05:05.663979",
             }
         },

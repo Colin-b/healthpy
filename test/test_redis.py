@@ -31,6 +31,24 @@ def test_redis_health_details_ok(monkeypatch):
     }
 
 
+def test_redis_health_details_ok_and_custom_pass_status(monkeypatch):
+    monkeypatch.setattr(redis.Redis, "ping", lambda *args: 1)
+    monkeypatch.setattr(redis.Redis, "keys", lambda *args: ["local"])
+    monkeypatch.setattr(healthpy.redis, "datetime", DateTimeMock)
+    monkeypatch.setattr(healthpy, "pass_status", "custom")
+
+    status, details = healthpy.redis.check("redis://test_url", "local_my_host")
+    assert status == "custom"
+    assert details == {
+        "redis:ping": {
+            "componentType": "component",
+            "observedValue": "local_my_host can be found.",
+            "status": "custom",
+            "time": "2018-10-11T15:05:05.663979",
+        }
+    }
+
+
 def test_redis_health_details_cannot_connect_to_redis(monkeypatch):
     def fail_ping(*args):
         raise redis.exceptions.ConnectionError("Test message")
@@ -44,6 +62,28 @@ def test_redis_health_details_cannot_connect_to_redis(monkeypatch):
         "redis:ping": {
             "componentType": "component",
             "status": "fail",
+            "time": "2018-10-11T15:05:05.663979",
+            "output": "Test message",
+        }
+    }
+
+
+def test_redis_health_details_cannot_connect_to_redis_and_custom_fail_status(
+    monkeypatch,
+):
+    def fail_ping(*args):
+        raise redis.exceptions.ConnectionError("Test message")
+
+    monkeypatch.setattr(redis.Redis, "ping", fail_ping)
+    monkeypatch.setattr(healthpy.redis, "datetime", DateTimeMock)
+    monkeypatch.setattr(healthpy, "fail_status", "custom")
+
+    status, details = healthpy.redis.check("redis://test_url", "")
+    assert status == "custom"
+    assert details == {
+        "redis:ping": {
+            "componentType": "component",
+            "status": "custom",
             "time": "2018-10-11T15:05:05.663979",
             "output": "Test message",
         }
@@ -80,6 +120,26 @@ def test_redis_health_details_cannot_retrieve_keys_as_list(monkeypatch):
         "redis:ping": {
             "componentType": "component",
             "status": "fail",
+            "time": "2018-10-11T15:05:05.663979",
+            "output": "local_my_host cannot be found in b'Those " "are bytes'",
+        }
+    }
+
+
+def test_redis_health_details_cannot_retrieve_keys_as_list_and_custom_fail_status(
+    monkeypatch,
+):
+    monkeypatch.setattr(redis.Redis, "ping", lambda *args: 1)
+    monkeypatch.setattr(redis.Redis, "keys", lambda *args: b"Those are bytes")
+    monkeypatch.setattr(healthpy.redis, "datetime", DateTimeMock)
+    monkeypatch.setattr(healthpy, "fail_status", "custom")
+
+    status, details = healthpy.redis.check("redis://test_url", "local_my_host")
+    assert status == "custom"
+    assert details == {
+        "redis:ping": {
+            "componentType": "component",
+            "status": "custom",
             "time": "2018-10-11T15:05:05.663979",
             "output": "local_my_host cannot be found in b'Those " "are bytes'",
         }

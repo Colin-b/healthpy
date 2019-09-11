@@ -3,30 +3,32 @@ import re
 
 import requests
 
+import healthpy
+
 
 def _api_health_status(health_response):
     if isinstance(health_response, dict):
-        return health_response.get("status", "pass")
-    return "pass"
+        return health_response.get("status", healthpy.pass_status)
+    return healthpy.pass_status
 
 
 def check(
     service_name: str,
     url: str,
     status_extracting: callable = None,
-    failure_status: str = "fail",
+    failure_status: str = None,
     **requests_args,
 ) -> (str, dict):
     """
-    Return Health details for an external service connection.
+    Return Health "Checks object" for an external service connection.
 
     :param service_name: External service name.
     :param url: External service health check URL.
     :param status_extracting: Function returning status according to the JSON response (as parameter).
     Default to the way status should be extracted from a python_service_template based service.
-    :param failure_status: Status to return in case of failure (Exception or HTTP rejection). fail by default.
-    :return: A tuple with a string providing the status (pass, warn, fail) and the details.
-    Details are based on https://inadarei.github.io/rfc-healthcheck/
+    :param failure_status: Status to return in case of failure (Exception or HTTP rejection). healthpy.fail_status by default.
+    :return: A tuple with a string providing the status (amongst healthpy.*_status variable) and the "Checks object".
+    Based on https://inadarei.github.io/rfc-healthcheck/
     """
     try:
         response = requests.get(
@@ -39,7 +41,7 @@ def check(
             response = (
                 response.json()
                 if re.match(
-                    "application/(health\+)?json", response.headers["Content-Type"]
+                    r"application/(health\+)?json", response.headers["Content-Type"]
                 )
                 else response.text
             )
@@ -55,11 +57,11 @@ def check(
                 },
             )
         return (
-            failure_status,
+            failure_status or healthpy.fail_status,
             {
                 f"{service_name}:health": {
                     "componentType": url,
-                    "status": failure_status,
+                    "status": failure_status or healthpy.fail_status,
                     "time": datetime.utcnow().isoformat(),
                     "output": response.text,
                 }
@@ -67,11 +69,11 @@ def check(
         )
     except Exception as e:
         return (
-            failure_status,
+            failure_status or healthpy.fail_status,
             {
                 f"{service_name}:health": {
                     "componentType": url,
-                    "status": failure_status,
+                    "status": failure_status or healthpy.fail_status,
                     "time": datetime.utcnow().isoformat(),
                     "output": str(e),
                 }
