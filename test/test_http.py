@@ -25,7 +25,7 @@ def test_exception_health_check(monkeypatch):
                 "componentType": "http://test/health",
                 "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
                 "status": "fail",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -42,7 +42,7 @@ def test_exception_health_check_with_custom_status(monkeypatch):
                 "componentType": "http://test/health",
                 "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
                 "status": "custom failure",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -58,7 +58,7 @@ def test_exception_health_check_as_warn(monkeypatch):
                 "componentType": "http://test/health",
                 "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
                 "status": "warn",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -76,7 +76,7 @@ def test_exception_health_check_as_warn_even_with_custom_status(monkeypatch):
                 "componentType": "http://test/health",
                 "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
                 "status": "warn provided",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -100,7 +100,7 @@ def test_error_health_check(monkeypatch):
                 "componentType": "http://test/health",
                 "output": '{"message": "An error occurred"}',
                 "status": "fail",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -122,7 +122,7 @@ def test_error_health_check_as_warn(monkeypatch):
                 "componentType": "http://test/health",
                 "output": '{"message": "An error occurred"}',
                 "status": "warn",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -154,7 +154,7 @@ def test_pass_status_health_check(monkeypatch):
                     "version": "1",
                 },
                 "status": "pass",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -189,7 +189,7 @@ def test_pass_status_health_check_with_health_content_type(monkeypatch):
                     "version": "1",
                 },
                 "status": "pass",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -208,7 +208,7 @@ def test_pass_status_custom_health_check_pass(monkeypatch):
                 "componentType": "http://test/status",
                 "observedValue": "pong",
                 "status": "pass",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -228,7 +228,7 @@ def test_pass_status_custom_health_check_with_custom_pass_status(monkeypatch):
                 "componentType": "http://test/status",
                 "observedValue": "pong",
                 "status": "pass",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -247,7 +247,7 @@ def test_pass_status_custom_health_check_with_default_extractor(monkeypatch):
                 "componentType": "http://test/status",
                 "observedValue": "pong",
                 "status": "pass",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -269,7 +269,7 @@ def test_pass_status_custom_health_check_with_default_extractor_and_custom_pass_
                 "componentType": "http://test/status",
                 "observedValue": "pong",
                 "status": "custom pass",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -301,7 +301,7 @@ def test_warn_status_health_check(monkeypatch):
                     "version": "1",
                 },
                 "status": "warn",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -320,7 +320,7 @@ def test_pass_status_custom_health_check_warn(monkeypatch):
                 "componentType": "http://test/status",
                 "observedValue": "pong",
                 "status": "warn",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -352,7 +352,7 @@ def test_fail_status_health_check(monkeypatch):
                     "version": "1",
                 },
                 "status": "fail",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -371,7 +371,7 @@ def test_fail_status_custom_health_check(monkeypatch):
                 "componentType": "http://test/status",
                 "observedValue": "pong",
                 "status": "fail",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -387,7 +387,7 @@ def test_fail_status_when_server_is_down(monkeypatch):
                 "componentType": "http://test/status",
                 "output": "Connection refused by Responses: GET http://test/status doesn't match Responses Mock",
                 "status": "fail",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
@@ -403,7 +403,7 @@ def test_fail_status_when_server_is_down_as_warn(monkeypatch):
                 "componentType": "http://test/status",
                 "output": "Connection refused by Responses: GET http://test/status doesn't match Responses Mock",
                 "status": "warn",
-                'affectedEndpoints': [],
+                'affectedEndpoints': None,
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
