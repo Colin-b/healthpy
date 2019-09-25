@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2019-09-25
+### Added
+- Expose affectedEndpoints to allow easy overview of affected endpoints if part of api is down. 
+
 ## [1.3.0] - 2019-09-11
 ### Added
 - Expose pass_status, warn_status, fail_status variables to allow tweaking of the value sent in those cases.
@@ -27,7 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.3.0...HEAD
+[Unreleased]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.4.0...HEAD
+[1.4.0]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.0.0...v1.1.0
