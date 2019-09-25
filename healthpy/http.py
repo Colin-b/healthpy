@@ -17,6 +17,7 @@ def check(
     url: str,
     status_extracting: callable = None,
     failure_status: str = None,
+    affected_endpoints = None,
     **requests_args,
 ) -> (str, dict):
     """
@@ -27,6 +28,7 @@ def check(
     :param status_extracting: Function returning status according to the JSON response (as parameter).
     Default to the way status should be extracted from a python_service_template based service.
     :param failure_status: Status to return in case of failure (Exception or HTTP rejection). healthpy.fail_status by default.
+    :param affected_endpoints: List of endpoints affected if dependency is down. Default to None.
     :return: A tuple with a string providing the status (amongst healthpy.*_status variable) and the "Checks object".
     Based on https://inadarei.github.io/rfc-healthcheck/
     """
@@ -52,6 +54,7 @@ def check(
                         "componentType": url,
                         "observedValue": response,
                         "status": status_extracting(response),
+                        "affectedEndpoints": affected_endpoints,
                         "time": datetime.utcnow().isoformat(),
                     }
                 },
@@ -62,6 +65,7 @@ def check(
                 f"{service_name}:health": {
                     "componentType": url,
                     "status": failure_status or healthpy.fail_status,
+                    "affectedEndpoints": affected_endpoints,
                     "time": datetime.utcnow().isoformat(),
                     "output": response.text,
                 }
@@ -74,6 +78,7 @@ def check(
                 f"{service_name}:health": {
                     "componentType": url,
                     "status": failure_status or healthpy.fail_status,
+                    "affectedEndpoints": affected_endpoints,
                     "time": datetime.utcnow().isoformat(),
                     "output": str(e),
                 }
