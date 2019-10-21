@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import re
 
 import requests
@@ -17,7 +17,7 @@ def check(
     url: str,
     status_extracting: callable = None,
     failure_status: str = None,
-    affected_endpoints = None,
+    affected_endpoints=None,
     **requests_args,
 ) -> (str, dict):
     """
@@ -55,7 +55,7 @@ def check(
                         "observedValue": response,
                         "status": status_extracting(response),
                         "affectedEndpoints": affected_endpoints,
-                        "time": datetime.utcnow().isoformat(),
+                        "time": datetime.datetime.utcnow().isoformat(),
                     }
                 },
             )
@@ -66,7 +66,7 @@ def check(
                     "componentType": url,
                     "status": failure_status or healthpy.fail_status,
                     "affectedEndpoints": affected_endpoints,
-                    "time": datetime.utcnow().isoformat(),
+                    "time": datetime.datetime.utcnow().isoformat(),
                     "output": response.text,
                 }
             },
@@ -79,7 +79,7 @@ def check(
                     "componentType": url,
                     "status": failure_status or healthpy.fail_status,
                     "affectedEndpoints": affected_endpoints,
-                    "time": datetime.utcnow().isoformat(),
+                    "time": datetime.datetime.utcnow().isoformat(),
                     "output": str(e),
                 }
             },

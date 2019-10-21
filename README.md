@@ -52,6 +52,18 @@ healthpy.warn_status = "custom"
 healthpy.fail_status = "error"
 ```
 
+## Testing
+
+A `pytest` fixture can be used to mock the datetime returned in http health check.
+
+```python
+from healthpy.testing import mock_http_health_datetime
+
+def test_http(mock_http_health_datetime):
+    pass  # Add your test calling healthpy.http.check
+```
+
+
 ## How to install
 1. [python 3.7+](https://www.python.org/downloads/) must be installed
 2. Use pip to install module:
