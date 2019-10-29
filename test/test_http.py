@@ -24,7 +24,7 @@ def test_exception_health_check_with_custom_status(
     monkeypatch, mock_http_health_datetime
 ):
     monkeypatch.setattr(healthpy, "fail_status", "custom failure")
-    assert (
+    assert healthpy.http.check("test", "http://test/health") == (
         "custom failure",
         {
             "test:health": {
@@ -35,11 +35,11 @@ def test_exception_health_check_with_custom_status(
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/health")
+    )
 
 
 def test_exception_health_check_as_warn(mock_http_health_datetime):
-    assert (
+    assert healthpy.http.check("test", "http://test/health", failure_status="warn") == (
         "warn",
         {
             "test:health": {
@@ -50,7 +50,7 @@ def test_exception_health_check_as_warn(mock_http_health_datetime):
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/health", failure_status="warn")
+    )
 
 
 def test_exception_health_check_as_warn_even_with_custom_status(
@@ -58,7 +58,9 @@ def test_exception_health_check_as_warn_even_with_custom_status(
 ):
     monkeypatch.setattr(healthpy, "fail_status", "custom failure")
     monkeypatch.setattr(healthpy, "warn_status", "custom warning")
-    assert (
+    assert healthpy.http.check(
+        "test", "http://test/health", failure_status="warn provided"
+    ) == (
         "warn provided",
         {
             "test:health": {
@@ -69,19 +71,17 @@ def test_exception_health_check_as_warn_even_with_custom_status(
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check(
-        "test", "http://test/health", failure_status="warn provided"
     )
 
 
-def test_error_health_check(mock_http_health_datetime, responses):
+def test_error_health_check(mock_http_health_datetime, responses: RequestsMock):
     responses.add(
         url="http://test/health",
         method=responses.GET,
         status=500,
         json={"message": "An error occurred"},
     )
-    assert (
+    assert healthpy.http.check("test", "http://test/health") == (
         "fail",
         {
             "test:health": {
@@ -92,17 +92,17 @@ def test_error_health_check(mock_http_health_datetime, responses):
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/health")
+    )
 
 
-def test_error_health_check_as_warn(mock_http_health_datetime, responses):
+def test_error_health_check_as_warn(mock_http_health_datetime, responses: RequestsMock):
     responses.add(
         url="http://test/health",
         method=responses.GET,
         status=500,
         json={"message": "An error occurred"},
     )
-    assert (
+    assert healthpy.http.check("test", "http://test/health", failure_status="warn") == (
         "warn",
         {
             "test:health": {
@@ -113,10 +113,10 @@ def test_error_health_check_as_warn(mock_http_health_datetime, responses):
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/health", failure_status="warn")
+    )
 
 
-def test_pass_status_health_check(mock_http_health_datetime, responses):
+def test_pass_status_health_check(mock_http_health_datetime, responses: RequestsMock):
     responses.add(
         url="http://test/health",
         method=responses.GET,
@@ -128,7 +128,7 @@ def test_pass_status_health_check(mock_http_health_datetime, responses):
             "details": {"toto": "tata"},
         },
     )
-    assert (
+    assert healthpy.http.check("test", "http://test/health") == (
         "pass",
         {
             "test:health": {
@@ -144,11 +144,11 @@ def test_pass_status_health_check(mock_http_health_datetime, responses):
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/health")
+    )
 
 
 def test_pass_status_health_check_with_health_content_type(
-    mock_http_health_datetime, responses
+    mock_http_health_datetime, responses: RequestsMock
 ):
     responses.add(
         url="http://test/health",
@@ -164,7 +164,7 @@ def test_pass_status_health_check_with_health_content_type(
         ),
         content_type="application/health+json",
     )
-    assert (
+    assert healthpy.http.check("test", "http://test/health") == (
         "pass",
         {
             "test:health": {
@@ -180,14 +180,16 @@ def test_pass_status_health_check_with_health_content_type(
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/health")
+    )
 
 
-def test_pass_status_custom_health_check_pass(mock_http_health_datetime, responses):
+def test_pass_status_custom_health_check_pass(
+    mock_http_health_datetime, responses: RequestsMock
+):
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert (
+    assert healthpy.http.check("test", "http://test/status", lambda resp: "pass") == (
         "pass",
         {
             "test:health": {
@@ -198,17 +200,17 @@ def test_pass_status_custom_health_check_pass(mock_http_health_datetime, respons
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/status", lambda resp: "pass")
+    )
 
 
 def test_pass_status_custom_health_check_with_custom_pass_status(
-    monkeypatch, mock_http_health_datetime, responses
+    monkeypatch, mock_http_health_datetime, responses: RequestsMock
 ):
     monkeypatch.setattr(healthpy, "pass_status", "custom pass")
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert (
+    assert healthpy.http.check("test", "http://test/status", lambda resp: "pass") == (
         "pass",
         {
             "test:health": {
@@ -219,16 +221,16 @@ def test_pass_status_custom_health_check_with_custom_pass_status(
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/status", lambda resp: "pass")
+    )
 
 
 def test_pass_status_custom_health_check_with_default_extractor(
-    mock_http_health_datetime, responses
+    mock_http_health_datetime, responses: RequestsMock
 ):
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert (
+    assert healthpy.http.check("test", "http://test/status") == (
         "pass",
         {
             "test:health": {
@@ -239,17 +241,17 @@ def test_pass_status_custom_health_check_with_default_extractor(
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/status")
+    )
 
 
 def test_pass_status_custom_health_check_with_default_extractor_and_custom_pass_status(
-    monkeypatch, mock_http_health_datetime, responses
+    monkeypatch, mock_http_health_datetime, responses: RequestsMock
 ):
     monkeypatch.setattr(healthpy, "pass_status", "custom pass")
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert (
+    assert healthpy.http.check("test", "http://test/status") == (
         "custom pass",
         {
             "test:health": {
@@ -260,10 +262,10 @@ def test_pass_status_custom_health_check_with_default_extractor_and_custom_pass_
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/status")
+    )
 
 
-def test_warn_status_health_check(mock_http_health_datetime, responses):
+def test_warn_status_health_check(mock_http_health_datetime, responses: RequestsMock):
     responses.add(
         url="http://test/health",
         method=responses.GET,
@@ -275,7 +277,7 @@ def test_warn_status_health_check(mock_http_health_datetime, responses):
             "details": {"toto": "tata"},
         },
     )
-    assert (
+    assert healthpy.http.check("test", "http://test/health") == (
         "warn",
         {
             "test:health": {
@@ -291,14 +293,16 @@ def test_warn_status_health_check(mock_http_health_datetime, responses):
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/health")
+    )
 
 
-def test_pass_status_custom_health_check_warn(mock_http_health_datetime, responses):
+def test_pass_status_custom_health_check_warn(
+    mock_http_health_datetime, responses: RequestsMock
+):
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert (
+    assert healthpy.http.check("test", "http://test/status", lambda resp: "warn") == (
         "warn",
         {
             "test:health": {
@@ -309,10 +313,10 @@ def test_pass_status_custom_health_check_warn(mock_http_health_datetime, respons
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/status", lambda resp: "warn")
+    )
 
 
-def test_fail_status_health_check(mock_http_health_datetime, responses):
+def test_fail_status_health_check(mock_http_health_datetime, responses: RequestsMock):
     responses.add(
         url="http://test/health",
         method=responses.GET,
@@ -324,7 +328,7 @@ def test_fail_status_health_check(mock_http_health_datetime, responses):
             "details": {"toto": "tata"},
         },
     )
-    assert (
+    assert healthpy.http.check("test", "http://test/health") == (
         "fail",
         {
             "test:health": {
@@ -340,14 +344,16 @@ def test_fail_status_health_check(mock_http_health_datetime, responses):
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/health")
+    )
 
 
-def test_fail_status_custom_health_check(mock_http_health_datetime, responses):
+def test_fail_status_custom_health_check(
+    mock_http_health_datetime, responses: RequestsMock
+):
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert (
+    assert healthpy.http.check("test", "http://test/status", lambda resp: "fail") == (
         "fail",
         {
             "test:health": {
@@ -358,11 +364,11 @@ def test_fail_status_custom_health_check(mock_http_health_datetime, responses):
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/status", lambda resp: "fail")
+    )
 
 
 def test_fail_status_when_server_is_down(mock_http_health_datetime):
-    assert (
+    assert healthpy.http.check("test", "http://test/status") == (
         "fail",
         {
             "test:health": {
@@ -373,11 +379,11 @@ def test_fail_status_when_server_is_down(mock_http_health_datetime):
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/status")
+    )
 
 
 def test_fail_status_when_server_is_down_as_warn(mock_http_health_datetime):
-    assert (
+    assert healthpy.http.check("test", "http://test/status", failure_status="warn") == (
         "warn",
         {
             "test:health": {
@@ -388,13 +394,18 @@ def test_fail_status_when_server_is_down_as_warn(mock_http_health_datetime):
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check("test", "http://test/status", failure_status="warn")
+    )
 
 
 def test_show_affected_endpoints_when_endpoint_throws_exception(
     mock_http_health_datetime,
 ):
-    assert (
+    assert healthpy.http.check(
+        "test",
+        "http://test/status",
+        failure_status="warn",
+        affected_endpoints=["/testroute/{userId}", "/status/{id}/idontexist"],
+    ) == (
         "warn",
         {
             "test:health": {
@@ -405,21 +416,21 @@ def test_show_affected_endpoints_when_endpoint_throws_exception(
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check(
-        "test",
-        "http://test/status",
-        failure_status="warn",
-        affected_endpoints=["/testroute/{userId}", "/status/{id}/idontexist"],
     )
 
 
 def test_show_affected_endpoints_when_endpoint_throws_fail(
-    mock_http_health_datetime, responses
+    mock_http_health_datetime, responses: RequestsMock
 ):
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert (
+    assert healthpy.http.check(
+        "test",
+        "http://test/status",
+        lambda resp: "fail",
+        affected_endpoints=["/testroute/{userId}", "/status/{id}/idontexist"],
+    ) == (
         "fail",
         {
             "test:health": {
@@ -430,21 +441,20 @@ def test_show_affected_endpoints_when_endpoint_throws_fail(
                 "time": "2018-10-11T15:05:05.663979",
             }
         },
-    ) == healthpy.http.check(
-        "test",
-        "http://test/status",
-        lambda resp: "fail",
-        affected_endpoints=["/testroute/{userId}", "/status/{id}/idontexist"],
     )
 
 
 def test_show_affected_endpoints_when_request_failed_404(
-    mock_http_health_datetime, responses
+    mock_http_health_datetime, responses: RequestsMock
 ):
     responses.add(
         url="http://test/status", method=responses.GET, status=404, body="Not Found"
     )
-    assert (
+    assert healthpy.http.check(
+        "test",
+        "http://test/status",
+        affected_endpoints=["/testroute/{userId}", "/status/{id}/idontexist"],
+    ) == (
         "fail",
         {
             "test:health": {
@@ -455,8 +465,4 @@ def test_show_affected_endpoints_when_request_failed_404(
                 "output": "Not Found",
             }
         },
-    ) == healthpy.http.check(
-        "test",
-        "http://test/status",
-        affected_endpoints=["/testroute/{userId}", "/status/{id}/idontexist"],
     )

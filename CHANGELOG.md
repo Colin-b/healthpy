@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2019-10-29
+### Changed
+- Do not use fixed first level dependencies.
+
 ## [1.5.0] - 2019-10-21
 ### Added
 - healthpy.testing module contains pytest fixture that can be used to ease testing.
@@ -35,7 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.5.0...HEAD
+[Unreleased]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.6.0...HEAD
+[1.6.0]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.tools.digital.engie.com/gempy/healthpy/compare/v1.2.0...v1.3.0

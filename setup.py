@@ -16,9 +16,9 @@ setup(
     extras_require={
         "testing": [
             # Used to mock HTTP responses
-            "pytest-responses==0.4.0",
+            "pytest-responses==0.4.*",
             # Used to check redis health
-            "redis==3.3.8",
+            "redis==3.*",
         ]
     },
     python_requires=">=3.6",
