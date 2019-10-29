@@ -1,0 +1,14 @@
+# these are the teams that will have a consensus enfored
+
+teams:
+
+  # the slug of a team as defined in https://developer.github.com/v3/teams/#response
+  # this is also the team as defined in the url structure https://<gitHubHost>/<org/<teams>/<slug>
+  - slug: risk_pnl
+
+  # the consensus is the minimum number of approved reviews that constitue a consensus
+  # acceptable values are:
+  #   * an integer
+  #   * majority (conensus will calculate a simple majority for the team)
+  #   * all (all team members)
+    consensus: majority
