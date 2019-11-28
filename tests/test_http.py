@@ -6,10 +6,10 @@ from healthpy.testing import mock_http_health_datetime
 
 
 def test_exception_health_check(mock_http_health_datetime):
-    assert healthpy.http.check("test", "http://test/health") == (
+    assert healthpy.http.check("tests", "http://test/health") == (
         "fail",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/health",
                 "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
                 "status": "fail",
@@ -24,10 +24,10 @@ def test_exception_health_check_with_custom_status(
     monkeypatch, mock_http_health_datetime
 ):
     monkeypatch.setattr(healthpy, "fail_status", "custom failure")
-    assert healthpy.http.check("test", "http://test/health") == (
+    assert healthpy.http.check("tests", "http://test/health") == (
         "custom failure",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/health",
                 "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
                 "status": "custom failure",
@@ -39,10 +39,10 @@ def test_exception_health_check_with_custom_status(
 
 
 def test_exception_health_check_as_warn(mock_http_health_datetime):
-    assert healthpy.http.check("test", "http://test/health", failure_status="warn") == (
+    assert healthpy.http.check("tests", "http://test/health", failure_status="warn") == (
         "warn",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/health",
                 "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
                 "status": "warn",
@@ -59,11 +59,11 @@ def test_exception_health_check_as_warn_even_with_custom_status(
     monkeypatch.setattr(healthpy, "fail_status", "custom failure")
     monkeypatch.setattr(healthpy, "warn_status", "custom warning")
     assert healthpy.http.check(
-        "test", "http://test/health", failure_status="warn provided"
+        "tests", "http://test/health", failure_status="warn provided"
     ) == (
         "warn provided",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/health",
                 "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
                 "status": "warn provided",
@@ -81,10 +81,10 @@ def test_error_health_check(mock_http_health_datetime, responses: RequestsMock):
         status=500,
         json={"message": "An error occurred"},
     )
-    assert healthpy.http.check("test", "http://test/health") == (
+    assert healthpy.http.check("tests", "http://test/health") == (
         "fail",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/health",
                 "output": '{"message": "An error occurred"}',
                 "status": "fail",
@@ -102,10 +102,10 @@ def test_error_health_check_as_warn(mock_http_health_datetime, responses: Reques
         status=500,
         json={"message": "An error occurred"},
     )
-    assert healthpy.http.check("test", "http://test/health", failure_status="warn") == (
+    assert healthpy.http.check("tests", "http://test/health", failure_status="warn") == (
         "warn",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/health",
                 "output": '{"message": "An error occurred"}',
                 "status": "warn",
@@ -128,10 +128,10 @@ def test_pass_status_health_check(mock_http_health_datetime, responses: Requests
             "details": {"toto": "tata"},
         },
     )
-    assert healthpy.http.check("test", "http://test/health") == (
+    assert healthpy.http.check("tests", "http://test/health") == (
         "pass",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/health",
                 "observedValue": {
                     "details": {"toto": "tata"},
@@ -164,10 +164,10 @@ def test_pass_status_health_check_with_health_content_type(
         ),
         content_type="application/health+json",
     )
-    assert healthpy.http.check("test", "http://test/health") == (
+    assert healthpy.http.check("tests", "http://test/health") == (
         "pass",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/health",
                 "observedValue": {
                     "details": {"toto": "tata"},
@@ -189,10 +189,10 @@ def test_pass_status_custom_health_check_pass(
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert healthpy.http.check("test", "http://test/status", lambda resp: "pass") == (
+    assert healthpy.http.check("tests", "http://test/status", lambda resp: "pass") == (
         "pass",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/status",
                 "observedValue": "pong",
                 "status": "pass",
@@ -210,10 +210,10 @@ def test_pass_status_custom_health_check_with_custom_pass_status(
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert healthpy.http.check("test", "http://test/status", lambda resp: "pass") == (
+    assert healthpy.http.check("tests", "http://test/status", lambda resp: "pass") == (
         "pass",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/status",
                 "observedValue": "pong",
                 "status": "pass",
@@ -230,10 +230,10 @@ def test_pass_status_custom_health_check_with_default_extractor(
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert healthpy.http.check("test", "http://test/status") == (
+    assert healthpy.http.check("tests", "http://test/status") == (
         "pass",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/status",
                 "observedValue": "pong",
                 "status": "pass",
@@ -251,10 +251,10 @@ def test_pass_status_custom_health_check_with_default_extractor_and_custom_pass_
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert healthpy.http.check("test", "http://test/status") == (
+    assert healthpy.http.check("tests", "http://test/status") == (
         "custom pass",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/status",
                 "observedValue": "pong",
                 "status": "custom pass",
@@ -277,10 +277,10 @@ def test_warn_status_health_check(mock_http_health_datetime, responses: Requests
             "details": {"toto": "tata"},
         },
     )
-    assert healthpy.http.check("test", "http://test/health") == (
+    assert healthpy.http.check("tests", "http://test/health") == (
         "warn",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/health",
                 "observedValue": {
                     "details": {"toto": "tata"},
@@ -302,10 +302,10 @@ def test_pass_status_custom_health_check_warn(
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert healthpy.http.check("test", "http://test/status", lambda resp: "warn") == (
+    assert healthpy.http.check("tests", "http://test/status", lambda resp: "warn") == (
         "warn",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/status",
                 "observedValue": "pong",
                 "status": "warn",
@@ -328,10 +328,10 @@ def test_fail_status_health_check(mock_http_health_datetime, responses: Requests
             "details": {"toto": "tata"},
         },
     )
-    assert healthpy.http.check("test", "http://test/health") == (
+    assert healthpy.http.check("tests", "http://test/health") == (
         "fail",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/health",
                 "observedValue": {
                     "details": {"toto": "tata"},
@@ -353,10 +353,10 @@ def test_fail_status_custom_health_check(
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert healthpy.http.check("test", "http://test/status", lambda resp: "fail") == (
+    assert healthpy.http.check("tests", "http://test/status", lambda resp: "fail") == (
         "fail",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/status",
                 "observedValue": "pong",
                 "status": "fail",
@@ -368,10 +368,10 @@ def test_fail_status_custom_health_check(
 
 
 def test_fail_status_when_server_is_down(mock_http_health_datetime):
-    assert healthpy.http.check("test", "http://test/status") == (
+    assert healthpy.http.check("tests", "http://test/status") == (
         "fail",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/status",
                 "output": "Connection refused by Responses: GET http://test/status doesn't match Responses Mock",
                 "status": "fail",
@@ -383,10 +383,10 @@ def test_fail_status_when_server_is_down(mock_http_health_datetime):
 
 
 def test_fail_status_when_server_is_down_as_warn(mock_http_health_datetime):
-    assert healthpy.http.check("test", "http://test/status", failure_status="warn") == (
+    assert healthpy.http.check("tests", "http://test/status", failure_status="warn") == (
         "warn",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/status",
                 "output": "Connection refused by Responses: GET http://test/status doesn't match Responses Mock",
                 "status": "warn",
@@ -401,14 +401,14 @@ def test_show_affected_endpoints_when_endpoint_throws_exception(
     mock_http_health_datetime,
 ):
     assert healthpy.http.check(
-        "test",
+        "tests",
         "http://test/status",
         failure_status="warn",
         affected_endpoints=["/testroute/{userId}", "/status/{id}/idontexist"],
     ) == (
         "warn",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/status",
                 "output": "Connection refused by Responses: GET http://test/status doesn't match Responses Mock",
                 "status": "warn",
@@ -426,14 +426,14 @@ def test_show_affected_endpoints_when_endpoint_throws_fail(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
     assert healthpy.http.check(
-        "test",
+        "tests",
         "http://test/status",
         lambda resp: "fail",
         affected_endpoints=["/testroute/{userId}", "/status/{id}/idontexist"],
     ) == (
         "fail",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/status",
                 "observedValue": "pong",
                 "status": "fail",
@@ -451,13 +451,13 @@ def test_show_affected_endpoints_when_request_failed_404(
         url="http://test/status", method=responses.GET, status=404, body="Not Found"
     )
     assert healthpy.http.check(
-        "test",
+        "tests",
         "http://test/status",
         affected_endpoints=["/testroute/{userId}", "/status/{id}/idontexist"],
     ) == (
         "fail",
         {
-            "test:health": {
+            "tests:health": {
                 "componentType": "http://test/status",
                 "status": "fail",
                 "affectedEndpoints": ["/testroute/{userId}", "/status/{id}/idontexist"],

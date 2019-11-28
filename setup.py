@@ -8,24 +8,15 @@ with open(os.path.join(this_dir, "README.md"), "r") as f:
 setup(
     name="healthpy",
     version=open("healthpy/version.py").readlines()[-1].split()[-1].strip("\"'"),
+    author="Colin Bounouar",
+    author_email="colin.bounouar.dev@gmail.com",
+    maintainer="Colin Bounouar",
+    maintainer_email="colin.bounouar.dev@gmail.com",
+    url="https://colin-b.github.io/healthpy/",
     description="API Health Checks",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    packages=find_packages(exclude=["test"]),
-    install_requires=[],
-    extras_require={
-        "testing": [
-            # Used to mock HTTP responses
-            "pytest-responses==0.4.*",
-            # Used to check redis health
-            "redis==3.*",
-        ]
-    },
-    python_requires=">=3.6",
-    project_urls={
-        "Changelog": "https://github.tools.digital.engie.com/gempy/healthpy/blob/master/CHANGELOG.md",
-        "Issues": "https://github.tools.digital.engie.com/gempy/healthpy/issues",
-    },
+    download_url="https://pypi.org/project/healthpy/",
     license="MIT",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -40,5 +31,23 @@ setup(
         "Topic :: Software Development :: Build Tools",
     ],
     keywords=["health", "api"],
+    packages=find_packages(exclude=["tests*"]),
+    install_requires=[],
+    extras_require={
+        "testing": [
+            # Used to mock HTTP responses
+            "pytest-responses==0.4.*",
+            # Used to check redis health
+            "redis==3.*",
+            # Used to check coverage
+            "pytest-cov==2.*",
+        ]
+    },
+    python_requires=">=3.6",
+    project_urls={
+        "GitHub": "https://github.com/Colin-b/healthpy",
+        "Changelog": "https://github.com/Colin-b/healthpy/blob/master/CHANGELOG.md",
+        "Issues": "https://github.com/Colin-b/healthpy/issues",
+    },
     platforms=["Windows", "Linux"],
 )
