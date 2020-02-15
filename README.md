@@ -2,14 +2,14 @@
 
 <p align="center">
 <a href="https://pypi.org/project/healthpy/"><img alt="pypi version" src="https://img.shields.io/pypi/v/healthpy"></a>
-<a href="https://travis-ci.org/Colin-b/healthpy"><img alt="Build status" src="https://api.travis-ci.org/Colin-b/healthpy.svg?branch=develop"></a>
-<a href="https://travis-ci.org/Colin-b/healthpy"><img alt="Coverage" src="https://img.shields.io/badge/coverage-100%25-brightgreen"></a>
+<a href="https://travis-ci.com/Colin-b/healthpy"><img alt="Build status" src="https://api.travis-ci.com/Colin-b/healthpy.svg?branch=develop"></a>
+<a href="https://travis-ci.com/Colin-b/healthpy"><img alt="Coverage" src="https://img.shields.io/badge/coverage-100%25-brightgreen"></a>
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
-<a href="https://travis-ci.org/Colin-b/healthpy"><img alt="Number of tests" src="https://img.shields.io/badge/tests-39 passed-blue"></a>
+<a href="https://travis-ci.com/Colin-b/healthpy"><img alt="Number of tests" src="https://img.shields.io/badge/tests-39 passed-blue"></a>
 <a href="https://pypi.org/project/healthpy/"><img alt="Number of downloads" src="https://img.shields.io/pypi/dm/healthpy"></a>
 </p>
 
-Health checks are based on [Health Check RFC](https://inadarei.github.io/rfc-healthcheck/) draft version 3.
+Health checks are based on [Health Check RFC](https://inadarei.github.io/rfc-healthcheck/) draft version 4.
 
 ## HTTP
 
