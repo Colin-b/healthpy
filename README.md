@@ -1,4 +1,4 @@
-<h2 align="center">API Health Checks</h2>
+<h2 align="center">Health Check for HTTP APIs</h2>
 
 <p align="center">
 <a href="https://pypi.org/project/healthpy/"><img alt="pypi version" src="https://img.shields.io/pypi/v/healthpy"></a>
@@ -9,9 +9,22 @@
 <a href="https://pypi.org/project/healthpy/"><img alt="Number of downloads" src="https://img.shields.io/pypi/dm/healthpy"></a>
 </p>
 
-Health checks are based on [Health Check RFC](https://inadarei.github.io/rfc-healthcheck/) draft version 4.
+Create an health check endpoint on your REST API following [Health Check RFC](https://inadarei.github.io/rfc-healthcheck/) draft version 4.
 
-## HTTP
+- [Perform checks](#perform-checks)
+  - [Of an external HTTP resource](#http)
+  - [Of a redis server](#redis)
+- [Return health check result](#return-result)
+  - [Aggregate multiple statuses](#compute-status-from-multiple-statuses)
+  - [Use a custom status](#using-custom-status)
+
+## Perform checks
+
+In case you have external dependencies, you should check the health of those dependencies.
+
+### HTTP
+
+If you have an external HTTP resource, you can check its health.
 
 [requests](https://pypi.python.org/pypi/requests) module must be installed to perform HTTP health checks.
 
@@ -21,7 +34,9 @@ import healthpy.http
 status, details = healthpy.http.check("service name", "http://service_url")
 ```
 
-## Redis
+### Redis
+
+If you rely on redis, you should check its health.
 
 [redis](https://pypi.python.org/pypi/redis) module must be installed to perform Redis health checks.
 
@@ -31,7 +46,13 @@ import healthpy.redis
 status, details = healthpy.redis.check("redis://redis_url", "redis_key")
 ```
 
-## Compute status from multiple statuses
+## Return result
+
+Once all checks have been performed you should return the result to your client.
+
+### Compute status from multiple statuses
+
+If you performed more than one check, you have to compute an aggregated status from all the checks.
 
 ```python
 import healthpy
@@ -43,7 +64,7 @@ statusN = healthpy.fail_status
 status = healthpy.status(status1, status2, statusN)
 ```
 
-## Using custom status
+### Using custom status
 
 By default pass status is "pass", warn status is "warn" and fail status is "fail".
 

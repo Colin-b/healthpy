@@ -13,7 +13,7 @@ setup(
     maintainer="Colin Bounouar",
     maintainer_email="colin.bounouar.dev@gmail.com",
     url="https://colin-b.github.io/healthpy/",
-    description="API Health Checks",
+    description="Health Check for HTTP APIs",
     long_description=long_description,
     long_description_content_type="text/markdown",
     download_url="https://pypi.org/project/healthpy/",
