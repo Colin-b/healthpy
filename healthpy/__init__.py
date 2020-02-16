@@ -1,4 +1,9 @@
-from healthpy._status import status, response_body, response_status_code, consul_response_status_code
+from healthpy._status import status
+from healthpy._response import (
+    response_body,
+    response_status_code,
+    consul_response_status_code,
+)
 from healthpy.version import __version__
 
 # API publishers SHOULD use following values for the field:
