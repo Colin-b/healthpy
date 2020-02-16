@@ -17,6 +17,8 @@ Create an health check endpoint on your REST API following [Health Check RFC](ht
 - [Return health check result](#return-result)
   - [Aggregate multiple statuses](#compute-status-from-multiple-statuses)
   - [Use a custom status](#using-custom-status)
+  - [HTTP response body](#http-response-body)
+  - [HTTP response status code](#http-response-status-code)
 
 ## Perform checks
 
@@ -24,15 +26,15 @@ In case you have external dependencies, you should check the health of those dep
 
 ### HTTP
 
-If you have an external HTTP resource, you can check its health.
-
-[requests](https://pypi.python.org/pypi/requests) module must be installed to perform HTTP health checks.
+If you have an external HTTP resource, you can check its health,as in the following sample:
 
 ```python
 import healthpy.http
 
-status, details = healthpy.http.check("service name", "http://service_url")
+status, checks = healthpy.http.check("petstore", "https://petstore3.swagger.io/api/v3/openapi.json")
 ```
+
+Note: [requests](https://pypi.python.org/pypi/requests) module must be installed to perform HTTP health checks.
 
 ### Redis
 
@@ -43,7 +45,7 @@ If you rely on redis, you should check its health.
 ```python
 import healthpy.redis
 
-status, details = healthpy.redis.check("redis://redis_url", "redis_key")
+status, checks = healthpy.redis.check("redis://redis_url", "redis_key")
 ```
 
 ## Return result
@@ -76,6 +78,53 @@ import healthpy
 healthpy.pass_status = "ok"
 healthpy.warn_status = "custom"
 healthpy.fail_status = "error"
+```
+
+### HTTP response body
+
+HTTP response body can be retrieved as a dictionary to be returned as JSON.
+
+```python
+import healthpy
+
+status = healthpy.pass_status  # replace with the aggregated status
+checks = {}  # replace with the computed checks
+
+body = healthpy.response_body(status, checks=checks)
+```
+
+Checks results are not mandatory in the response.
+
+```python
+import healthpy
+
+status = healthpy.pass_status  # replace with the aggregated status
+
+body = healthpy.response_body(status)
+```
+
+### HTTP response status code
+
+HTTP response status code can be retrieved as an integer.
+
+```python
+import healthpy
+
+status = healthpy.pass_status  # replace with the aggregated status
+
+status_code = healthpy.response_status_code(status)
+```
+
+#### Consul
+
+HTTP response status code should be a bit different for [Consul](https://www.consul.io/docs/agent/checks.html) health checks.
+
+```python
+import healthpy
+
+status = healthpy.pass_status  # replace with the aggregated status
+
+status_code = healthpy.consul_response_status_code(status)
 ```
 
 ## Testing
