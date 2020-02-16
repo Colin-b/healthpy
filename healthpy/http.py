@@ -27,7 +27,7 @@ def check(
 
     :param service_name: External service name.
     :param url: External service health check URL.
-    :param status_extracting: Function returning status according to the JSON response (as parameter).
+    :param status_extracting: Function returning status according to the JSON or text response (as parameter).
     Default to the way status should be extracted from a service following healthcheck RFC.
     :param failure_status: Status to return in case of failure (Exception or HTTP rejection). healthpy.fail_status by default.
     :param affected_endpoints: List of endpoints affected if dependency is down. Default to None.
