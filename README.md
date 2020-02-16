@@ -86,6 +86,7 @@ A `pytest` fixture can be used to mock the datetime returned in http health chec
 from healthpy.testing import mock_http_health_datetime
 
 def test_http(mock_http_health_datetime):
+    # Time will be returned as "2018-10-11T15:05:05.663979"
     pass  # Add your test calling healthpy.http.check
 ```
 

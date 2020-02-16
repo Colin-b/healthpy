@@ -59,7 +59,7 @@ def check(
         status = failure_status or healthpy.fail_status
         check = {"output": str(e)} if status != healthpy.pass_status else {}
 
-    if status != healthpy.pass_status:
+    if affected_endpoints and status != healthpy.pass_status:
         check["affectedEndpoints"] = affected_endpoints
 
     if additional_keys:

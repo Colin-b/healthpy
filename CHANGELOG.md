@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `healthpy.response_status_code` function to retrieve an HTTP status code to return to the client.
 - `healthpy.consul_response_status_code` function to retrieve an HTTP status code to return to Consul.
 
+### Fixed
+- affectedEndpoints is not sent anymore if not provided.
+
+### Deprecated
+- Providing non mandatory parameters via positional arguments will be removed in the next major release.
+
 ## [1.7.0] - 2019-11-29
 ### Added
 - Public release.
