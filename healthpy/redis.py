@@ -5,15 +5,17 @@ import redis
 import healthpy
 
 
-def check(url: str, key_pattern: str) -> (str, dict):
+def check(url: str, key_pattern: str, additional_keys: dict = None) -> (str, dict):
     """
     Return Health "Checks object" for redis keys.
 
     :param url: Redis URL
     :param key_pattern: Pattern to look for in keys.
+    :param additional_keys: Additional user defined keys to send in checks.
     :return: A tuple with a string providing the status (amongst healthpy.*_status variable) and the "Checks object".
     Based on https://inadarei.github.io/rfc-healthcheck/
     """
+    additional_keys = additional_keys or {}
     try:
         redis_server = redis.Redis.from_url(url)
         redis_server.ping()
@@ -29,6 +31,7 @@ def check(url: str, key_pattern: str) -> (str, dict):
                         "status": healthpy.fail_status,
                         "time": datetime.utcnow().isoformat(),
                         "output": f"{key_pattern} cannot be found in {keys}",
+                        **additional_keys,
                     }
                 },
             )
@@ -41,6 +44,7 @@ def check(url: str, key_pattern: str) -> (str, dict):
                     "observedValue": f"{key_pattern} can be found.",
                     "status": healthpy.pass_status,
                     "time": datetime.utcnow().isoformat(),
+                    **additional_keys,
                 }
             },
         )
@@ -53,6 +57,7 @@ def check(url: str, key_pattern: str) -> (str, dict):
                     "status": healthpy.fail_status,
                     "time": datetime.utcnow().isoformat(),
                     "output": str(e),
+                    **additional_keys,
                 }
             },
         )
