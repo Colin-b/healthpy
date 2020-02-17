@@ -5,8 +5,11 @@ from healthpy.starlette import add_consul_health_endpoint
 
 
 def test_consul_health_endpoint_pass():
+    async def health_check():
+        return "pass", {}
+
     app = Starlette()
-    add_consul_health_endpoint(app, lambda: ("pass", {}), release_id="1.2.3")
+    add_consul_health_endpoint(app, health_check, release_id="1.2.3")
     with TestClient(app) as client:
         response = client.get("/health")
         assert response.status_code == 200
@@ -19,8 +22,11 @@ def test_consul_health_endpoint_pass():
 
 
 def test_consul_health_endpoint_warn():
+    async def health_check():
+        return "warn", {}
+
     app = Starlette()
-    add_consul_health_endpoint(app, lambda: ("warn", {}), release_id="1.2.3")
+    add_consul_health_endpoint(app, health_check, release_id="1.2.3")
     with TestClient(app) as client:
         response = client.get("/health")
         assert response.status_code == 429
@@ -33,8 +39,11 @@ def test_consul_health_endpoint_warn():
 
 
 def test_consul_health_endpoint_fail():
+    async def health_check():
+        return "fail", {}
+
     app = Starlette()
-    add_consul_health_endpoint(app, lambda: ("fail", {}), release_id="1.2.3")
+    add_consul_health_endpoint(app, health_check, release_id="1.2.3")
     with TestClient(app) as client:
         response = client.get("/health")
         assert response.status_code == 400
@@ -47,7 +56,7 @@ def test_consul_health_endpoint_fail():
 
 
 def test_consul_health_endpoint_failure():
-    def failing():
+    async def failing():
         raise Exception("failure explanation")
 
     app = Starlette()

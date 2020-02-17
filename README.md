@@ -146,13 +146,13 @@ from healthpy.starlette import add_consul_health_endpoint
 app = Starlette()
 
 
-def health_check():
+async def health_check():
     # TODO Replace by your own checks.
     status_1, checks_1 = healthpy.http.check("my external dependency", "http://url_to_check")
     status_2, checks_2 = healthpy.redis.check("redis://redis_url", "key_to_check")
     return healthpy.status(status_1, status_2), {**checks_1, **checks_2}
 
-# /health endpoint will call the health_check function.
+# /health endpoint will call the health_check coroutine.
 add_consul_health_endpoint(app, health_check)
 ```
 

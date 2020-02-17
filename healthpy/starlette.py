@@ -1,3 +1,5 @@
+from typing import Callable
+
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 
@@ -5,13 +7,13 @@ import healthpy
 from healthpy._response import response_body, consul_response_status_code
 
 
-def add_consul_health_endpoint(app: Starlette, health_check: callable, **kwargs):
+def add_consul_health_endpoint(app: Starlette, health_check: Callable, **kwargs):
     """
     Create /health: Consul Health check endpoint implementing https://inadarei.github.io/rfc-healthcheck/ but following
     Consul expected status code (https://www.consul.io/docs/agent/checks.html).
 
     :param app: The ASGI application.
-    :param health_check: Callable returning a tuple of size 2 with a string providing the status (pass, warn, fail)
+    :param health_check: async callable returning a tuple of size 2 with a string providing the status (pass, warn, fail)
     and the "Checks object" as a dictionary as per https://inadarei.github.io/rfc-healthcheck/
     :param version: (optional) public version of the service. If not provided, version will be extracted from the
     release_id, considering that release_id is following semantic versioning.
@@ -33,7 +35,7 @@ def add_consul_health_endpoint(app: Starlette, health_check: callable, **kwargs)
     """
 
     @app.route("/health")
-    def health(request):
+    async def health(request):
         """
         responses:
             200:
@@ -127,7 +129,7 @@ def add_consul_health_endpoint(app: Starlette, health_check: callable, **kwargs)
             - Monitoring
         """
         try:
-            status, checks = health_check()
+            status, checks = await health_check()
             body = response_body(status, checks=checks, **kwargs)
         except Exception as e:
             status = healthpy.fail_status
