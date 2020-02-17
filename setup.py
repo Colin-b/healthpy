@@ -39,6 +39,8 @@ setup(
             "pytest-responses==0.4.*",
             # Used to check redis health
             "redis==3.*",
+            # Used to check starlette endpoint
+            "starlette==0.13.*",
             # Used to check coverage
             "pytest-cov==2.*",
         ]
