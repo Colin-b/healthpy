@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.0] - 2020-02-17
+### Added
+- `healthpy.starlette.add_consul_health_endpoint` function to add a [Consul](https://www.consul.io/docs/agent/checks.html) health check endpoint to a [Starlette](https://www.starlette.io) application.
+
 ## [1.8.0] - 2020-02-16
 ### Changed
 - Update to latest RFC specification (draft v4) meaning:
@@ -28,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Public release.
 
-[Unreleased]: https://github.com/Colin-b/healthpy/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/Colin-b/healthpy/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/Colin-b/healthpy/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/Colin-b/healthpy/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/Colin-b/healthpy/releases/tag/v1.7.0
