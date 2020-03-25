@@ -2,10 +2,10 @@
 
 Everyone is free to contribute on this project.
 
-There are two ways to contribute:
+There are 2 ways to contribute:
 
-- Submit an issue.
-- Submit a pull request.
+- [Submit an issue.](#submitting-an-issue)
+- [Submit a pull request.](#submitting-a-pull-request)
 
 ## Submitting an issue
 
@@ -40,27 +40,34 @@ Before creating an issue please make sure that it was not already reported.
 
 1) Create a new branch based on `develop` branch.
 2) Fetch all dev dependencies.
-    * Install required python modules using `pip`: **python -m pip install .[testing]**
+    * Install required python modules using [`pip`](https://pypi.org/project/pip/): **python -m pip install .[testing]**
 3) Ensure tests are ok by running them using [`pytest`](http://doc.pytest.org/en/latest/index.html).
-4) Add your changes.
-5) Follow [Black](https://black.readthedocs.io/en/stable/) code formatting.
-    * Install [pre-commit](https://pre-commit.com) python module using `pip`: **python -m pip install pre-commit**
+4) Follow [Black](https://black.readthedocs.io/en/stable/) code formatting.
+    * Install [pre-commit](https://pre-commit.com) python module using pip: **python -m pip install pre-commit**
     * To add the [pre-commit](https://pre-commit.com) hook, after the installation run: **pre-commit install**
-6) Add at least one [`pytest`](http://doc.pytest.org/en/latest/index.html) test case.
+5) Add your changes.
+    * The commit should only contain small changes and should be atomic.
+    * The commit message should follow [those rules](https://chris.beams.io/posts/git-commit/).
+6) Add or update at least one [`pytest`](http://doc.pytest.org/en/latest/index.html) test case.
     * Unless it is an internal refactoring request or a documentation update.
-7) Increment [version number](https://semver.org) and add related [changelog entry](https://keepachangelog.com/en/1.0.0/).
+    * Each line of code should be covered by the test cases.
+7) Add related [changelog entry](https://keepachangelog.com/en/1.1.0/) in the Unreleased section.
     * Unless it is a documentation update.
-
-##### Changelog entry
-
-Once the changelog entry is added, please don't forget to also add the link to the proper tag at the end of the changelog.
 
 #### Enter pull request
 
 1) Go to the *Pull requests* tab and click on the *New pull request* button.
 2) *base* should always be set to `develop` and it should be compared to your branch.
 3) Title should be a small sentence describing the request.
-3) The comment should contains as much information as possible
+4) The comment should contains as much information as possible
     * Actual behavior (before the new code)
     * Expected behavior (with the new code)
-    * Steps to reproduce (with and without the new code to see the difference)
+5) A pull request can contain more than one commit, but the entire content should still be [atomic](#what-is-an-atomic-pull-request).
+
+##### What is an atomic pull request
+
+It is important for a Pull Request to be atomic. But with a Pull Request, we measure the "succeed" as the ability to deliver the smallest possible piece of functionality, it can either be composed by one or many atomic commits.
+
+One of the bad practices of a Pull Request is changing things that are not concerned with the functionality that is being addressed, like whitespace changes, typo fixes, variable renaming, etc. If those things are not related to the concern of the Pull Request, it should probably be done in a different one.
+
+One might argue that this practice of not mixing different concerns and small fixes in the same Pull Request violates the Boy Scout Rule because it doesn't allow frequent cleanup. However, cleanup doesn't need to be done in the same Pull Request, the important thing is not leaving the codebase in a bad state after finishing the functionality. If you must, refactor the code in a separate Pull Request, and preferably before the actually concerned functionality is developed, because then if there is a need in the near future to revert the Pull Request, the likelihood of code conflict will be lower. [source](https://medium.com/@fagnerbrack/one-pull-request-one-concern-e84a27dfe9f1)
