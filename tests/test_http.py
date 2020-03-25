@@ -364,6 +364,93 @@ def test_warn_status_health_check(mock_http_health_datetime, responses: Requests
     )
 
 
+def test_warn_status_http_error_health_check(
+    mock_http_health_datetime, responses: RequestsMock
+):
+    responses.add(
+        url="http://test/health",
+        method=responses.GET,
+        status=429,
+        json={
+            "status": "warn",
+            "version": "1",
+            "releaseId": "1.2.3",
+            "details": {"toto": "tata"},
+        },
+    )
+    assert healthpy.http.check("tests", "http://test/health") == (
+        "warn",
+        {
+            "tests:health": {
+                "componentType": "http://test/health",
+                "output": {
+                    "status": "warn",
+                    "version": "1",
+                    "releaseId": "1.2.3",
+                    "details": {"toto": "tata"},
+                },
+                "status": "warn",
+                "time": "2018-10-11T15:05:05.663979",
+            }
+        },
+    )
+
+
+def test_custom_http_error_status_health_check(
+    mock_http_health_datetime, responses: RequestsMock
+):
+    responses.add(
+        url="http://test/health", method=responses.GET, status=500,
+    )
+    assert healthpy.http.check(
+        "tests",
+        "http://test/health",
+        error_status_extracting=lambda x: healthpy.warn_status,
+    ) == (
+        "warn",
+        {
+            "tests:health": {
+                "componentType": "http://test/health",
+                "output": "",
+                "status": "warn",
+                "time": "2018-10-11T15:05:05.663979",
+            }
+        },
+    )
+
+
+def test_fail_status_http_error_health_check(
+    mock_http_health_datetime, responses: RequestsMock
+):
+    responses.add(
+        url="http://test/health",
+        method=responses.GET,
+        status=400,
+        json={
+            "status": "fail",
+            "version": "1",
+            "releaseId": "1.2.3",
+            "details": {"toto": "tata"},
+        },
+    )
+    assert healthpy.http.check("tests", "http://test/health") == (
+        "fail",
+        {
+            "tests:health": {
+                "componentType": "http://test/health",
+                "output": {
+                    "status": "fail",
+                    "version": "1",
+                    "releaseId": "1.2.3",
+                    "details": {"toto": "tata"},
+                },
+                "status": "fail",
+                "time": "2018-10-11T15:05:05.663979",
+            }
+        },
+    )
+
+
 def test_warn_status_health_check_additional_keys(
     mock_http_health_datetime, responses: RequestsMock
 ):

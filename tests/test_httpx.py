@@ -376,6 +376,95 @@ def test_warn_status_health_check(mock_http_health_datetime, httpx_mock: HTTPXMo
     )
 
 
+def test_warn_status_http_error_health_check(
+    mock_http_health_datetime, httpx_mock: HTTPXMock
+):
+    httpx_mock.add_response(
+        url="http://test/health",
+        method="GET",
+        status_code=429,
+        json={
+            "status": "warn",
+            "version": "1",
+            "releaseId": "1.2.3",
+            "details": {"toto": "tata"},
+        },
+        headers={"content-type": "application/json"},
+    )
+    assert healthpy.httpx.check("tests", "http://test/health") == (
+        "warn",
+        {
+            "tests:health": {
+                "componentType": "http://test/health",
+                "output": {
+                    "status": "warn",
+                    "version": "1",
+                    "releaseId": "1.2.3",
+                    "details": {"toto": "tata"},
+                },
+                "status": "warn",
+                "time": "2018-10-11T15:05:05.663979",
+            }
+        },
+    )
+
+
+def test_custom_http_error_status_health_check(
+    mock_http_health_datetime, httpx_mock: HTTPXMock
+):
+    httpx_mock.add_response(
+        url="http://test/health", method="GET", status_code=500,
+    )
+    assert healthpy.httpx.check(
+        "tests",
+        "http://test/health",
+        error_status_extracting=lambda x: healthpy.warn_status,
+    ) == (
+        "warn",
+        {
+            "tests:health": {
+                "componentType": "http://test/health",
+                "output": "",
+                "status": "warn",
+                "time": "2018-10-11T15:05:05.663979",
+            }
+        },
+    )
+
+
+def test_fail_status_http_error_health_check(
+    mock_http_health_datetime, httpx_mock: HTTPXMock
+):
+    httpx_mock.add_response(
+        url="http://test/health",
+        method="GET",
+        status_code=400,
+        json={
+            "status": "fail",
+            "version": "1",
+            "releaseId": "1.2.3",
+            "details": {"toto": "tata"},
+        },
+        headers={"content-type": "application/json"},
+    )
+    assert healthpy.httpx.check("tests", "http://test/health") == (
+        "fail",
+        {
+            "tests:health": {
+                "componentType": "http://test/health",
+                "output": {
+                    "status": "fail",
+                    "version": "1",
+                    "releaseId": "1.2.3",
+                    "details": {"toto": "tata"},
+                },
+                "status": "fail",
+                "time": "2018-10-11T15:05:05.663979",
+            }
+        },
+    )
+
+
 def test_warn_status_health_check_additional_keys(
     mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
