@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Allow to use [`httpx`](https://pypi.python.org/pypi/httpx) instead of [`requests`](https://pypi.python.org/pypi/requests) to perform HTTP health check.
+
+### Changed
+- In case an HTTP error occurred, output will be returned as JSON interpreted if possible instead of string.
 
 ## [1.9.0] - 2020-02-17
 ### Added

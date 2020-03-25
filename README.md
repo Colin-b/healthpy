@@ -28,15 +28,23 @@ In case you have external dependencies, you should check the health of those dep
 
 ### HTTP
 
-If you have an external HTTP resource, you can check its health,as in the following sample:
+If you have an external HTTP resource, you can check its health, as in the following sample:
 
 ```python
-import healthpy.http
+import healthpy.httpx
 
-status, checks = healthpy.http.check("petstore", "https://petstore3.swagger.io/api/v3/openapi.json")
+status, checks = healthpy.httpx.check("petstore", "https://petstore3.swagger.io/api/v3/openapi.json")
 ```
 
-Note: [requests](https://pypi.python.org/pypi/requests) module must be installed to perform HTTP health checks.
+Note: [httpx](https://pypi.python.org/pypi/httpx) module must be installed to perform HTTP health checks.
+
+Alternatively, you can use [requests](https://pypi.python.org/pypi/requests) to perform the exact same check:
+
+```python
+import healthpy.requests
+
+status, checks = healthpy.requests.check("petstore", "https://petstore3.swagger.io/api/v3/openapi.json")
+```
 
 ### Redis
 

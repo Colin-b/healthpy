@@ -1,12 +1,12 @@
 import json
 from responses import RequestsMock
 
-import healthpy.http
+import healthpy.requests
 from healthpy.testing import mock_http_health_datetime
 
 
 def test_exception_health_check(mock_http_health_datetime):
-    assert healthpy.http.check("tests", "http://test/health") == (
+    assert healthpy.requests.check("tests", "http://test/health") == (
         "fail",
         {
             "tests:health": {
@@ -20,7 +20,7 @@ def test_exception_health_check(mock_http_health_datetime):
 
 
 def test_exception_health_check_additional_keys(mock_http_health_datetime):
-    assert healthpy.http.check(
+    assert healthpy.requests.check(
         "tests", "http://test/health", additional_keys={"custom": "test"}
     ) == (
         "fail",
@@ -40,7 +40,7 @@ def test_exception_health_check_with_custom_status(
     monkeypatch, mock_http_health_datetime
 ):
     monkeypatch.setattr(healthpy, "fail_status", "custom failure")
-    assert healthpy.http.check("tests", "http://test/health") == (
+    assert healthpy.requests.check("tests", "http://test/health") == (
         "custom failure",
         {
             "tests:health": {
@@ -54,7 +54,7 @@ def test_exception_health_check_with_custom_status(
 
 
 def test_exception_health_check_as_warn(mock_http_health_datetime):
-    assert healthpy.http.check(
+    assert healthpy.requests.check(
         "tests", "http://test/health", failure_status="warn"
     ) == (
         "warn",
@@ -74,7 +74,7 @@ def test_exception_health_check_as_warn_even_with_custom_status(
 ):
     monkeypatch.setattr(healthpy, "fail_status", "custom failure")
     monkeypatch.setattr(healthpy, "warn_status", "custom warning")
-    assert healthpy.http.check(
+    assert healthpy.requests.check(
         "tests", "http://test/health", failure_status="warn provided"
     ) == (
         "warn provided",
@@ -96,7 +96,7 @@ def test_error_health_check(mock_http_health_datetime, responses: RequestsMock):
         status=500,
         body='{"message": "An error occurred"}',
     )
-    assert healthpy.http.check("tests", "http://test/health") == (
+    assert healthpy.requests.check("tests", "http://test/health") == (
         "fail",
         {
             "tests:health": {
@@ -118,7 +118,7 @@ def test_error_health_check_additional_keys(
         status=500,
         json={"message": "An error occurred"},
     )
-    assert healthpy.http.check(
+    assert healthpy.requests.check(
         "tests", "http://test/health", additional_keys={"custom": "test"}
     ) == (
         "fail",
@@ -141,7 +141,7 @@ def test_error_health_check_as_warn(mock_http_health_datetime, responses: Reques
         status=500,
         json={"message": "An error occurred"},
     )
-    assert healthpy.http.check(
+    assert healthpy.requests.check(
         "tests", "http://test/health", failure_status="warn"
     ) == (
         "warn",
@@ -168,7 +168,7 @@ def test_pass_status_health_check(mock_http_health_datetime, responses: Requests
             "details": {"toto": "tata"},
         },
     )
-    assert healthpy.http.check("tests", "http://test/health") == (
+    assert healthpy.requests.check("tests", "http://test/health") == (
         "pass",
         {
             "tests:health": {
@@ -200,7 +200,7 @@ def test_pass_status_health_check_additional_keys(
             "details": {"toto": "tata"},
         },
     )
-    assert healthpy.http.check(
+    assert healthpy.requests.check(
         "tests", "http://test/health", additional_keys={"custom": "test"}
     ) == (
         "pass",
@@ -238,7 +238,7 @@ def test_pass_status_health_check_with_health_content_type(
         ),
         content_type="application/health+json",
     )
-    assert healthpy.http.check("tests", "http://test/health") == (
+    assert healthpy.requests.check("tests", "http://test/health") == (
         "pass",
         {
             "tests:health": {
@@ -262,7 +262,9 @@ def test_pass_status_custom_health_check_pass(
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert healthpy.http.check("tests", "http://test/status", lambda resp: "pass") == (
+    assert healthpy.requests.check(
+        "tests", "http://test/status", lambda resp: "pass"
+    ) == (
         "pass",
         {
             "tests:health": {
@@ -282,7 +284,9 @@ def test_pass_status_custom_health_check_with_custom_pass_status(
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert healthpy.http.check("tests", "http://test/status", lambda resp: "pass") == (
+    assert healthpy.requests.check(
+        "tests", "http://test/status", lambda resp: "pass"
+    ) == (
         "pass",
         {
             "tests:health": {
@@ -301,7 +305,7 @@ def test_pass_status_custom_health_check_with_default_extractor(
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert healthpy.http.check("tests", "http://test/status") == (
+    assert healthpy.requests.check("tests", "http://test/status") == (
         "pass",
         {
             "tests:health": {
@@ -321,7 +325,7 @@ def test_pass_status_custom_health_check_with_default_extractor_and_custom_pass_
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert healthpy.http.check("tests", "http://test/status") == (
+    assert healthpy.requests.check("tests", "http://test/status") == (
         "custom pass",
         {
             "tests:health": {
@@ -346,7 +350,7 @@ def test_warn_status_health_check(mock_http_health_datetime, responses: Requests
             "details": {"toto": "tata"},
         },
     )
-    assert healthpy.http.check("tests", "http://test/health") == (
+    assert healthpy.requests.check("tests", "http://test/health") == (
         "warn",
         {
             "tests:health": {
@@ -378,7 +382,7 @@ def test_warn_status_health_check_additional_keys(
             "details": {"toto": "tata"},
         },
     )
-    assert healthpy.http.check(
+    assert healthpy.requests.check(
         "tests", "http://test/health", additional_keys={"custom": "test"}
     ) == (
         "warn",
@@ -405,7 +409,9 @@ def test_pass_status_custom_health_check_warn(
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert healthpy.http.check("tests", "http://test/status", lambda resp: "warn") == (
+    assert healthpy.requests.check(
+        "tests", "http://test/status", lambda resp: "warn"
+    ) == (
         "warn",
         {
             "tests:health": {
@@ -430,7 +436,7 @@ def test_fail_status_health_check(mock_http_health_datetime, responses: Requests
             "details": {"toto": "tata"},
         },
     )
-    assert healthpy.http.check("tests", "http://test/health") == (
+    assert healthpy.requests.check("tests", "http://test/health") == (
         "fail",
         {
             "tests:health": {
@@ -454,7 +460,9 @@ def test_fail_status_custom_health_check(
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert healthpy.http.check("tests", "http://test/status", lambda resp: "fail") == (
+    assert healthpy.requests.check(
+        "tests", "http://test/status", lambda resp: "fail"
+    ) == (
         "fail",
         {
             "tests:health": {
@@ -468,7 +476,7 @@ def test_fail_status_custom_health_check(
 
 
 def test_fail_status_when_server_is_down(mock_http_health_datetime):
-    assert healthpy.http.check("tests", "http://test/status") == (
+    assert healthpy.requests.check("tests", "http://test/status") == (
         "fail",
         {
             "tests:health": {
@@ -482,7 +490,7 @@ def test_fail_status_when_server_is_down(mock_http_health_datetime):
 
 
 def test_fail_status_when_server_is_down_as_warn(mock_http_health_datetime):
-    assert healthpy.http.check(
+    assert healthpy.requests.check(
         "tests", "http://test/status", failure_status="warn"
     ) == (
         "warn",
@@ -500,7 +508,7 @@ def test_fail_status_when_server_is_down_as_warn(mock_http_health_datetime):
 def test_show_affected_endpoints_when_endpoint_throws_exception(
     mock_http_health_datetime,
 ):
-    assert healthpy.http.check(
+    assert healthpy.requests.check(
         "tests",
         "http://test/status",
         failure_status="warn",
@@ -525,7 +533,7 @@ def test_show_affected_endpoints_when_endpoint_throws_fail(
     responses.add(
         url="http://test/status", method=responses.GET, status=200, body="pong"
     )
-    assert healthpy.http.check(
+    assert healthpy.requests.check(
         "tests",
         "http://test/status",
         lambda resp: "fail",
@@ -550,7 +558,7 @@ def test_show_affected_endpoints_when_request_failed_404(
     responses.add(
         url="http://test/status", method=responses.GET, status=404, body="Not Found"
     )
-    assert healthpy.http.check(
+    assert healthpy.requests.check(
         "tests",
         "http://test/status",
         affected_endpoints=["/testroute/{userId}", "/status/{id}/idontexist"],
