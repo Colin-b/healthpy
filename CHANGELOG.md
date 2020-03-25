@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.0] - 2020-03-25
+### Added
+- Allow to use [`httpx`](https://pypi.python.org/pypi/httpx) instead of [`requests`](https://pypi.python.org/pypi/requests) to perform HTTP health check.
+
+### Changed
+- In case an HTTP error occurred, output will be returned as JSON interpreted if possible instead of string.
+
 ## [1.9.0] - 2020-02-17
 ### Added
 - `healthpy.starlette.add_consul_health_endpoint` function to add a [Consul](https://www.consul.io/docs/agent/checks.html) health check endpoint to a [Starlette](https://www.starlette.io) application.
@@ -32,7 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Public release.
 
-[Unreleased]: https://github.com/Colin-b/healthpy/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/Colin-b/healthpy/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/Colin-b/healthpy/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/Colin-b/healthpy/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/Colin-b/healthpy/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/Colin-b/healthpy/releases/tag/v1.7.0
