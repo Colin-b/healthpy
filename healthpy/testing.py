@@ -17,6 +17,6 @@ class DateTimeModuleMock:
 
 @pytest.fixture
 def mock_http_health_datetime(monkeypatch):
-    import healthpy.http
+    import healthpy._http
 
-    monkeypatch.setattr(healthpy.http, "datetime", DateTimeModuleMock)
+    monkeypatch.setattr(healthpy._http, "datetime", DateTimeModuleMock)

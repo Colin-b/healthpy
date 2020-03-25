@@ -30,13 +30,15 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Topic :: Software Development :: Build Tools",
     ],
-    keywords=["health", "api"],
+    keywords=["health", "api", "http", "redis"],
     packages=find_packages(exclude=["tests*"]),
     install_requires=[],
     extras_require={
         "testing": [
-            # Used to mock HTTP responses
+            # Used to mock requests HTTP responses
             "pytest-responses==0.4.*",
+            # Used to mock httpx HTTP responses
+            "pytest-httpx==0.2.*",
             # Used to check redis health
             "redis==3.*",
             # Used to check starlette endpoint

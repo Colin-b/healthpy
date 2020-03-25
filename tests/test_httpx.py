@@ -1,17 +1,20 @@
 import json
-from responses import RequestsMock
+import os
 
-import healthpy.http
+import pytest
+from pytest_httpx import httpx_mock, HTTPXMock
+
+import healthpy.httpx
 from healthpy.testing import mock_http_health_datetime
 
 
-def test_exception_health_check(mock_http_health_datetime):
-    assert healthpy.http.check("tests", "http://test/health") == (
+def test_exception_health_check(mock_http_health_datetime, httpx_mock: HTTPXMock):
+    assert healthpy.httpx.check("tests", "http://test/health") == (
         "fail",
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/health\n\nAvailable matches:\n",
+                "output": "No mock can be found for GET request on http://test/health.",
                 "status": "fail",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -19,15 +22,17 @@ def test_exception_health_check(mock_http_health_datetime):
     )
 
 
-def test_exception_health_check_additional_keys(mock_http_health_datetime):
-    assert healthpy.http.check(
+def test_exception_health_check_additional_keys(
+    mock_http_health_datetime, httpx_mock: HTTPXMock
+):
+    assert healthpy.httpx.check(
         "tests", "http://test/health", additional_keys={"custom": "test"}
     ) == (
         "fail",
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/health\n\nAvailable matches:\n",
+                "output": "No mock can be found for GET request on http://test/health.",
                 "status": "fail",
                 "time": "2018-10-11T15:05:05.663979",
                 "custom": "test",
@@ -37,15 +42,15 @@ def test_exception_health_check_additional_keys(mock_http_health_datetime):
 
 
 def test_exception_health_check_with_custom_status(
-    monkeypatch, mock_http_health_datetime
+    monkeypatch, mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
     monkeypatch.setattr(healthpy, "fail_status", "custom failure")
-    assert healthpy.http.check("tests", "http://test/health") == (
+    assert healthpy.httpx.check("tests", "http://test/health") == (
         "custom failure",
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/health\n\nAvailable matches:\n",
+                "output": "No mock can be found for GET request on http://test/health.",
                 "status": "custom failure",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -53,15 +58,17 @@ def test_exception_health_check_with_custom_status(
     )
 
 
-def test_exception_health_check_as_warn(mock_http_health_datetime):
-    assert healthpy.http.check(
+def test_exception_health_check_as_warn(
+    mock_http_health_datetime, httpx_mock: HTTPXMock
+):
+    assert healthpy.httpx.check(
         "tests", "http://test/health", failure_status="warn"
     ) == (
         "warn",
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/health\n\nAvailable matches:\n",
+                "output": "No mock can be found for GET request on http://test/health.",
                 "status": "warn",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -70,18 +77,18 @@ def test_exception_health_check_as_warn(mock_http_health_datetime):
 
 
 def test_exception_health_check_as_warn_even_with_custom_status(
-    monkeypatch, mock_http_health_datetime
+    monkeypatch, mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
     monkeypatch.setattr(healthpy, "fail_status", "custom failure")
     monkeypatch.setattr(healthpy, "warn_status", "custom warning")
-    assert healthpy.http.check(
+    assert healthpy.httpx.check(
         "tests", "http://test/health", failure_status="warn provided"
     ) == (
         "warn provided",
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/health\n\nAvailable matches:\n",
+                "output": "No mock can be found for GET request on http://test/health.",
                 "status": "warn provided",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -89,14 +96,14 @@ def test_exception_health_check_as_warn_even_with_custom_status(
     )
 
 
-def test_error_health_check(mock_http_health_datetime, responses: RequestsMock):
-    responses.add(
+def test_error_health_check(mock_http_health_datetime, httpx_mock: HTTPXMock):
+    httpx_mock.add_response(
         url="http://test/health",
-        method=responses.GET,
-        status=500,
-        body='{"message": "An error occurred"}',
+        method="GET",
+        status_code=500,
+        data='{"message": "An error occurred"}',
     )
-    assert healthpy.http.check("tests", "http://test/health") == (
+    assert healthpy.httpx.check("tests", "http://test/health") == (
         "fail",
         {
             "tests:health": {
@@ -110,15 +117,16 @@ def test_error_health_check(mock_http_health_datetime, responses: RequestsMock):
 
 
 def test_error_health_check_additional_keys(
-    mock_http_health_datetime, responses: RequestsMock
+    mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    responses.add(
+    httpx_mock.add_response(
         url="http://test/health",
-        method=responses.GET,
-        status=500,
+        method="GET",
+        status_code=500,
         json={"message": "An error occurred"},
+        headers={"content-type": "application/json"},
     )
-    assert healthpy.http.check(
+    assert healthpy.httpx.check(
         "tests", "http://test/health", additional_keys={"custom": "test"}
     ) == (
         "fail",
@@ -134,14 +142,15 @@ def test_error_health_check_additional_keys(
     )
 
 
-def test_error_health_check_as_warn(mock_http_health_datetime, responses: RequestsMock):
-    responses.add(
+def test_error_health_check_as_warn(mock_http_health_datetime, httpx_mock: HTTPXMock):
+    httpx_mock.add_response(
         url="http://test/health",
-        method=responses.GET,
-        status=500,
+        method="GET",
+        status_code=500,
         json={"message": "An error occurred"},
+        headers={"content-type": "application/json"},
     )
-    assert healthpy.http.check(
+    assert healthpy.httpx.check(
         "tests", "http://test/health", failure_status="warn"
     ) == (
         "warn",
@@ -156,28 +165,29 @@ def test_error_health_check_as_warn(mock_http_health_datetime, responses: Reques
     )
 
 
-def test_pass_status_health_check(mock_http_health_datetime, responses: RequestsMock):
-    responses.add(
+def test_pass_status_health_check(mock_http_health_datetime, httpx_mock: HTTPXMock):
+    httpx_mock.add_response(
         url="http://test/health",
-        method=responses.GET,
-        status=200,
+        method="GET",
+        status_code=200,
         json={
             "status": "pass",
             "version": "1",
             "releaseId": "1.2.3",
             "details": {"toto": "tata"},
         },
+        headers={"content-type": "application/json"},
     )
-    assert healthpy.http.check("tests", "http://test/health") == (
+    assert healthpy.httpx.check("tests", "http://test/health") == (
         "pass",
         {
             "tests:health": {
                 "componentType": "http://test/health",
                 "observedValue": {
-                    "details": {"toto": "tata"},
-                    "releaseId": "1.2.3",
                     "status": "pass",
                     "version": "1",
+                    "releaseId": "1.2.3",
+                    "details": {"toto": "tata"},
                 },
                 "status": "pass",
                 "time": "2018-10-11T15:05:05.663979",
@@ -187,20 +197,21 @@ def test_pass_status_health_check(mock_http_health_datetime, responses: Requests
 
 
 def test_pass_status_health_check_additional_keys(
-    mock_http_health_datetime, responses: RequestsMock
+    mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    responses.add(
+    httpx_mock.add_response(
         url="http://test/health",
-        method=responses.GET,
-        status=200,
+        method="GET",
+        status_code=200,
         json={
             "status": "pass",
             "version": "1",
             "releaseId": "1.2.3",
             "details": {"toto": "tata"},
         },
+        headers={"content-type": "application/json"},
     )
-    assert healthpy.http.check(
+    assert healthpy.httpx.check(
         "tests", "http://test/health", additional_keys={"custom": "test"}
     ) == (
         "pass",
@@ -208,10 +219,10 @@ def test_pass_status_health_check_additional_keys(
             "tests:health": {
                 "componentType": "http://test/health",
                 "observedValue": {
-                    "details": {"toto": "tata"},
-                    "releaseId": "1.2.3",
                     "status": "pass",
                     "version": "1",
+                    "releaseId": "1.2.3",
+                    "details": {"toto": "tata"},
                 },
                 "status": "pass",
                 "time": "2018-10-11T15:05:05.663979",
@@ -222,13 +233,13 @@ def test_pass_status_health_check_additional_keys(
 
 
 def test_pass_status_health_check_with_health_content_type(
-    mock_http_health_datetime, responses: RequestsMock
+    mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    responses.add(
+    httpx_mock.add_response(
         url="http://test/health",
-        method=responses.GET,
-        status=200,
-        body=json.dumps(
+        method="GET",
+        status_code=200,
+        data=json.dumps(
             {
                 "status": "pass",
                 "version": "1",
@@ -236,18 +247,18 @@ def test_pass_status_health_check_with_health_content_type(
                 "details": {"toto": "tata"},
             }
         ),
-        content_type="application/health+json",
+        headers={"content-type": "application/health+json"},
     )
-    assert healthpy.http.check("tests", "http://test/health") == (
+    assert healthpy.httpx.check("tests", "http://test/health") == (
         "pass",
         {
             "tests:health": {
                 "componentType": "http://test/health",
                 "observedValue": {
-                    "details": {"toto": "tata"},
-                    "releaseId": "1.2.3",
                     "status": "pass",
                     "version": "1",
+                    "releaseId": "1.2.3",
+                    "details": {"toto": "tata"},
                 },
                 "status": "pass",
                 "time": "2018-10-11T15:05:05.663979",
@@ -257,12 +268,12 @@ def test_pass_status_health_check_with_health_content_type(
 
 
 def test_pass_status_custom_health_check_pass(
-    mock_http_health_datetime, responses: RequestsMock
+    mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    responses.add(
-        url="http://test/status", method=responses.GET, status=200, body="pong"
+    httpx_mock.add_response(
+        url="http://test/status", method="GET", status_code=200, data="pong"
     )
-    assert healthpy.http.check("tests", "http://test/status", lambda resp: "pass") == (
+    assert healthpy.httpx.check("tests", "http://test/status", lambda resp: "pass") == (
         "pass",
         {
             "tests:health": {
@@ -276,13 +287,13 @@ def test_pass_status_custom_health_check_pass(
 
 
 def test_pass_status_custom_health_check_with_custom_pass_status(
-    monkeypatch, mock_http_health_datetime, responses: RequestsMock
+    monkeypatch, mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
     monkeypatch.setattr(healthpy, "pass_status", "custom pass")
-    responses.add(
-        url="http://test/status", method=responses.GET, status=200, body="pong"
+    httpx_mock.add_response(
+        url="http://test/status", method="GET", status_code=200, data="pong"
     )
-    assert healthpy.http.check("tests", "http://test/status", lambda resp: "pass") == (
+    assert healthpy.httpx.check("tests", "http://test/status", lambda resp: "pass") == (
         "pass",
         {
             "tests:health": {
@@ -296,12 +307,12 @@ def test_pass_status_custom_health_check_with_custom_pass_status(
 
 
 def test_pass_status_custom_health_check_with_default_extractor(
-    mock_http_health_datetime, responses: RequestsMock
+    mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    responses.add(
-        url="http://test/status", method=responses.GET, status=200, body="pong"
+    httpx_mock.add_response(
+        url="http://test/status", method="GET", status_code=200, data="pong"
     )
-    assert healthpy.http.check("tests", "http://test/status") == (
+    assert healthpy.httpx.check("tests", "http://test/status") == (
         "pass",
         {
             "tests:health": {
@@ -315,13 +326,13 @@ def test_pass_status_custom_health_check_with_default_extractor(
 
 
 def test_pass_status_custom_health_check_with_default_extractor_and_custom_pass_status(
-    monkeypatch, mock_http_health_datetime, responses: RequestsMock
+    monkeypatch, mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
     monkeypatch.setattr(healthpy, "pass_status", "custom pass")
-    responses.add(
-        url="http://test/status", method=responses.GET, status=200, body="pong"
+    httpx_mock.add_response(
+        url="http://test/status", method="GET", status_code=200, data="pong"
     )
-    assert healthpy.http.check("tests", "http://test/status") == (
+    assert healthpy.httpx.check("tests", "http://test/status") == (
         "custom pass",
         {
             "tests:health": {
@@ -334,28 +345,29 @@ def test_pass_status_custom_health_check_with_default_extractor_and_custom_pass_
     )
 
 
-def test_warn_status_health_check(mock_http_health_datetime, responses: RequestsMock):
-    responses.add(
+def test_warn_status_health_check(mock_http_health_datetime, httpx_mock: HTTPXMock):
+    httpx_mock.add_response(
         url="http://test/health",
-        method=responses.GET,
-        status=200,
+        method="GET",
+        status_code=200,
         json={
             "status": "warn",
             "version": "1",
             "releaseId": "1.2.3",
             "details": {"toto": "tata"},
         },
+        headers={"content-type": "application/json"},
     )
-    assert healthpy.http.check("tests", "http://test/health") == (
+    assert healthpy.httpx.check("tests", "http://test/health") == (
         "warn",
         {
             "tests:health": {
                 "componentType": "http://test/health",
                 "observedValue": {
-                    "details": {"toto": "tata"},
-                    "releaseId": "1.2.3",
                     "status": "warn",
                     "version": "1",
+                    "releaseId": "1.2.3",
+                    "details": {"toto": "tata"},
                 },
                 "status": "warn",
                 "time": "2018-10-11T15:05:05.663979",
@@ -365,20 +377,21 @@ def test_warn_status_health_check(mock_http_health_datetime, responses: Requests
 
 
 def test_warn_status_health_check_additional_keys(
-    mock_http_health_datetime, responses: RequestsMock
+    mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    responses.add(
+    httpx_mock.add_response(
         url="http://test/health",
-        method=responses.GET,
-        status=200,
+        method="GET",
+        status_code=200,
         json={
             "status": "warn",
             "version": "1",
             "releaseId": "1.2.3",
             "details": {"toto": "tata"},
         },
+        headers={"content-type": "application/json"},
     )
-    assert healthpy.http.check(
+    assert healthpy.httpx.check(
         "tests", "http://test/health", additional_keys={"custom": "test"}
     ) == (
         "warn",
@@ -386,10 +399,10 @@ def test_warn_status_health_check_additional_keys(
             "tests:health": {
                 "componentType": "http://test/health",
                 "observedValue": {
-                    "details": {"toto": "tata"},
-                    "releaseId": "1.2.3",
                     "status": "warn",
                     "version": "1",
+                    "releaseId": "1.2.3",
+                    "details": {"toto": "tata"},
                 },
                 "status": "warn",
                 "time": "2018-10-11T15:05:05.663979",
@@ -400,12 +413,12 @@ def test_warn_status_health_check_additional_keys(
 
 
 def test_pass_status_custom_health_check_warn(
-    mock_http_health_datetime, responses: RequestsMock
+    mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    responses.add(
-        url="http://test/status", method=responses.GET, status=200, body="pong"
+    httpx_mock.add_response(
+        url="http://test/status", method="GET", status_code=200, data="pong"
     )
-    assert healthpy.http.check("tests", "http://test/status", lambda resp: "warn") == (
+    assert healthpy.httpx.check("tests", "http://test/status", lambda resp: "warn") == (
         "warn",
         {
             "tests:health": {
@@ -418,28 +431,29 @@ def test_pass_status_custom_health_check_warn(
     )
 
 
-def test_fail_status_health_check(mock_http_health_datetime, responses: RequestsMock):
-    responses.add(
+def test_fail_status_health_check(mock_http_health_datetime, httpx_mock: HTTPXMock):
+    httpx_mock.add_response(
         url="http://test/health",
-        method=responses.GET,
-        status=200,
+        method="GET",
+        status_code=200,
         json={
             "status": "fail",
             "version": "1",
             "releaseId": "1.2.3",
             "details": {"toto": "tata"},
         },
+        headers={"content-type": "application/json"},
     )
-    assert healthpy.http.check("tests", "http://test/health") == (
+    assert healthpy.httpx.check("tests", "http://test/health") == (
         "fail",
         {
             "tests:health": {
                 "componentType": "http://test/health",
                 "observedValue": {
-                    "details": {"toto": "tata"},
-                    "releaseId": "1.2.3",
                     "status": "fail",
                     "version": "1",
+                    "releaseId": "1.2.3",
+                    "details": {"toto": "tata"},
                 },
                 "status": "fail",
                 "time": "2018-10-11T15:05:05.663979",
@@ -449,12 +463,12 @@ def test_fail_status_health_check(mock_http_health_datetime, responses: Requests
 
 
 def test_fail_status_custom_health_check(
-    mock_http_health_datetime, responses: RequestsMock
+    mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    responses.add(
-        url="http://test/status", method=responses.GET, status=200, body="pong"
+    httpx_mock.add_response(
+        url="http://test/status", method="GET", status_code=200, data="pong"
     )
-    assert healthpy.http.check("tests", "http://test/status", lambda resp: "fail") == (
+    assert healthpy.httpx.check("tests", "http://test/status", lambda resp: "fail") == (
         "fail",
         {
             "tests:health": {
@@ -467,13 +481,15 @@ def test_fail_status_custom_health_check(
     )
 
 
-def test_fail_status_when_server_is_down(mock_http_health_datetime):
-    assert healthpy.http.check("tests", "http://test/status") == (
+def test_fail_status_when_server_is_down(
+    mock_http_health_datetime, httpx_mock: HTTPXMock
+):
+    assert healthpy.httpx.check("tests", "http://test/status") == (
         "fail",
         {
             "tests:health": {
                 "componentType": "http://test/status",
-                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/status\n\nAvailable matches:\n",
+                "output": "No mock can be found for GET request on http://test/status.",
                 "status": "fail",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -481,15 +497,17 @@ def test_fail_status_when_server_is_down(mock_http_health_datetime):
     )
 
 
-def test_fail_status_when_server_is_down_as_warn(mock_http_health_datetime):
-    assert healthpy.http.check(
+def test_fail_status_when_server_is_down_as_warn(
+    mock_http_health_datetime, httpx_mock: HTTPXMock
+):
+    assert healthpy.httpx.check(
         "tests", "http://test/status", failure_status="warn"
     ) == (
         "warn",
         {
             "tests:health": {
                 "componentType": "http://test/status",
-                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/status\n\nAvailable matches:\n",
+                "output": "No mock can be found for GET request on http://test/status.",
                 "status": "warn",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -498,9 +516,9 @@ def test_fail_status_when_server_is_down_as_warn(mock_http_health_datetime):
 
 
 def test_show_affected_endpoints_when_endpoint_throws_exception(
-    mock_http_health_datetime,
+    mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    assert healthpy.http.check(
+    assert healthpy.httpx.check(
         "tests",
         "http://test/status",
         failure_status="warn",
@@ -510,7 +528,7 @@ def test_show_affected_endpoints_when_endpoint_throws_exception(
         {
             "tests:health": {
                 "componentType": "http://test/status",
-                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/status\n\nAvailable matches:\n",
+                "output": "No mock can be found for GET request on http://test/status.",
                 "status": "warn",
                 "affectedEndpoints": ["/testroute/{userId}", "/status/{id}/idontexist"],
                 "time": "2018-10-11T15:05:05.663979",
@@ -520,12 +538,12 @@ def test_show_affected_endpoints_when_endpoint_throws_exception(
 
 
 def test_show_affected_endpoints_when_endpoint_throws_fail(
-    mock_http_health_datetime, responses: RequestsMock
+    mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    responses.add(
-        url="http://test/status", method=responses.GET, status=200, body="pong"
+    httpx_mock.add_response(
+        url="http://test/status", method="GET", status_code=200, data="pong"
     )
-    assert healthpy.http.check(
+    assert healthpy.httpx.check(
         "tests",
         "http://test/status",
         lambda resp: "fail",
@@ -545,12 +563,12 @@ def test_show_affected_endpoints_when_endpoint_throws_fail(
 
 
 def test_show_affected_endpoints_when_request_failed_404(
-    mock_http_health_datetime, responses: RequestsMock
+    mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    responses.add(
-        url="http://test/status", method=responses.GET, status=404, body="Not Found"
+    httpx_mock.add_response(
+        url="http://test/status", method="GET", status_code=404, data="Not Found"
     )
-    assert healthpy.http.check(
+    assert healthpy.httpx.check(
         "tests",
         "http://test/status",
         affected_endpoints=["/testroute/{userId}", "/status/{id}/idontexist"],
