@@ -11,7 +11,7 @@ def test_exception_health_check(mock_http_health_datetime):
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
+                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/health\n\nAvailable matches:\n",
                 "status": "fail",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -27,7 +27,7 @@ def test_exception_health_check_additional_keys(mock_http_health_datetime):
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
+                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/health\n\nAvailable matches:\n",
                 "status": "fail",
                 "time": "2018-10-11T15:05:05.663979",
                 "custom": "test",
@@ -45,7 +45,7 @@ def test_exception_health_check_with_custom_status(
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
+                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/health\n\nAvailable matches:\n",
                 "status": "custom failure",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -61,7 +61,7 @@ def test_exception_health_check_as_warn(mock_http_health_datetime):
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
+                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/health\n\nAvailable matches:\n",
                 "status": "warn",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -81,7 +81,7 @@ def test_exception_health_check_as_warn_even_with_custom_status(
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "Connection refused by Responses: GET http://test/health doesn't match Responses Mock",
+                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/health\n\nAvailable matches:\n",
                 "status": "warn provided",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -473,7 +473,7 @@ def test_fail_status_when_server_is_down(mock_http_health_datetime):
         {
             "tests:health": {
                 "componentType": "http://test/status",
-                "output": "Connection refused by Responses: GET http://test/status doesn't match Responses Mock",
+                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/status\n\nAvailable matches:\n",
                 "status": "fail",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -489,7 +489,7 @@ def test_fail_status_when_server_is_down_as_warn(mock_http_health_datetime):
         {
             "tests:health": {
                 "componentType": "http://test/status",
-                "output": "Connection refused by Responses: GET http://test/status doesn't match Responses Mock",
+                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/status\n\nAvailable matches:\n",
                 "status": "warn",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -510,7 +510,7 @@ def test_show_affected_endpoints_when_endpoint_throws_exception(
         {
             "tests:health": {
                 "componentType": "http://test/status",
-                "output": "Connection refused by Responses: GET http://test/status doesn't match Responses Mock",
+                "output": "Connection refused by Responses - the call doesn't match any registered mock.\n\nRequest: \n- GET http://test/status\n\nAvailable matches:\n",
                 "status": "warn",
                 "affectedEndpoints": ["/testroute/{userId}", "/status/{id}/idontexist"],
                 "time": "2018-10-11T15:05:05.663979",
