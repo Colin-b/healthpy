@@ -1,5 +1,7 @@
 import json
+
 from responses import RequestsMock
+import requests
 
 import healthpy.requests
 from healthpy.testing import mock_http_health_datetime
@@ -373,8 +375,32 @@ def test_warn_status_http_error_health_check(
 def test_custom_http_error_status_health_check(
     mock_http_health_datetime, responses: RequestsMock
 ):
-    responses.add(
-        url="http://test/health", method=responses.GET, status=500,
+    responses.add(url="http://test/health", method=responses.GET, status=500)
+    assert healthpy.requests.check(
+        "tests",
+        "http://test/health",
+        error_status_extracting=lambda x: healthpy.warn_status,
+    ) == (
+        "warn",
+        {
+            "tests:health": {
+                "componentType": "http://test/health",
+                "output": "",
+                "status": "warn",
+                "time": "2018-10-11T15:05:05.663979",
+            }
+        },
+    )
+
+
+def test_custom_failure_status_health_check(
+    mock_http_health_datetime, responses: RequestsMock
+):
+    def send_failure(*args, **kwargs):
+        raise requests.ConnectionError()
+
+    responses.add_callback(
+        url="http://test/health", method=responses.GET, callback=send_failure
     )
     assert healthpy.requests.check(
         "tests",
@@ -387,6 +413,32 @@ def test_custom_http_error_status_health_check(
                 "componentType": "http://test/health",
                 "output": "",
                 "status": "warn",
+                "time": "2018-10-11T15:05:05.663979",
+            }
+        },
+    )
+
+
+def test_custom_failure_status_exception_health_check(
+    mock_http_health_datetime, responses: RequestsMock
+):
+    def send_failure(*args, **kwargs):
+        raise requests.ConnectionError()
+
+    responses.add_callback(
+        url="http://test/health", method=responses.GET, callback=send_failure
+    )
+    assert healthpy.requests.check(
+        "tests",
+        "http://test/health",
+        error_status_extracting=lambda x: x.trigger_exception,
+    ) == (
+        "fail",
+        {
+            "tests:health": {
+                "componentType": "http://test/health",
+                "output": "",
+                "status": "fail",
                 "time": "2018-10-11T15:05:05.663979",
             }
         },

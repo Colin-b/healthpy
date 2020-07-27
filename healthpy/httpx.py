@@ -40,6 +40,7 @@ def check(
     Default to the way status should be extracted from a service following healthcheck RFC.
     :param error_status_extracting: Function returning status according to the JSON or text response (as parameter).
     Default to the way status should be extracted from a service following healthcheck RFC or fail_status.
+    Note that the response might be None as this is called to extract the default status in case of failure as well.
     :param affected_endpoints: List of endpoints affected if dependency is down. Default to None.
     :param additional_keys: Additional user defined keys to send in checks.
     :return: A tuple with a string providing the status (amongst healthpy.*_status variable) and the "Checks object".

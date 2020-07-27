@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.1] - 2020-07-27
+### Fixed
+- error_status_extracting is now used to extract the status to return in case of failure as well. (default to failure_status)
+
+### Changed
+- The parameter provided to error_status_extracting will be `None` in case of a failure.
+
 ## [1.11.0] - 2020-03-26
 ### Added
 - Allow to provide a custom way to resolve status in case of HTTP error via `error_status_extracting` parameter.
@@ -49,7 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Public release.
 
-[Unreleased]: https://github.com/Colin-b/healthpy/compare/v1.11.0...HEAD
+[Unreleased]: https://github.com/Colin-b/healthpy/compare/v1.11.1...HEAD
+[1.11.1]: https://github.com/Colin-b/healthpy/compare/v1.11.0...v1.11.1
 [1.11.0]: https://github.com/Colin-b/healthpy/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/Colin-b/healthpy/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/Colin-b/healthpy/compare/v1.8.0...v1.9.0
