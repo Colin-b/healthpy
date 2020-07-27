@@ -22,6 +22,13 @@ def _api_error_health_status(health_response: Any) -> str:
     return healthpy.fail_status
 
 
+def safe_error_status_extracting(error_status_extracting: callable) -> str:
+    try:
+        return error_status_extracting(None)
+    except:
+        return healthpy.fail_status
+
+
 def _check(
     service_name: str,
     url: str,
@@ -42,6 +49,7 @@ def _check(
     Default to the way status should be extracted from a service following healthcheck RFC or pass_status.
     :param error_status_extracting: Function returning status according to the JSON or text response (as parameter).
     Default to the way status should be extracted from a service following healthcheck RFC or fail_status.
+    Note that the response might be None as this is called to extract the default status in case of failure as well.
     :param affected_endpoints: List of endpoints affected if dependency is down. Default to None.
     :param additional_keys: Additional user defined keys to send in checks.
     :return: A tuple with a string providing the status (amongst healthpy.*_status variable) and the "Checks object".
@@ -69,7 +77,12 @@ def _check(
             status = status_extracting(response)
             check = {"observedValue": response}
     except Exception as e:
-        status = failure_status or healthpy.fail_status
+        if failure_status:
+            warnings.warn(
+                "failure_status is deprecated and should not be used anymore. Use error_status_extracting instead.",
+                DeprecationWarning,
+            )
+        status = failure_status or safe_error_status_extracting(error_status_extracting)
         check = {"output": str(e)} if status != healthpy.pass_status else {}
 
     if affected_endpoints and status != healthpy.pass_status:
