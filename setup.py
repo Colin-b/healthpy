@@ -25,7 +25,6 @@ setup(
         "Natural Language :: English",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Topic :: Software Development :: Build Tools",
@@ -49,7 +48,7 @@ setup(
             "pytest-cov==2.*",
         ]
     },
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     project_urls={
         "GitHub": "https://github.com/Colin-b/healthpy",
         "Changelog": "https://github.com/Colin-b/healthpy/blob/master/CHANGELOG.md",
