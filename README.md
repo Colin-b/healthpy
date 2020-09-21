@@ -2,10 +2,10 @@
 
 <p align="center">
 <a href="https://pypi.org/project/healthpy/"><img alt="pypi version" src="https://img.shields.io/pypi/v/healthpy"></a>
-<a href="https://travis-ci.com/Colin-b/healthpy"><img alt="Build status" src="https://api.travis-ci.com/Colin-b/healthpy.svg?branch=develop"></a>
+<a href="https://travis-ci.com/Colin-b/healthpy"><img alt="Build status" src="https://api.travis-ci.com/Colin-b/healthpy.svg?branch=master"></a>
 <a href="https://travis-ci.com/Colin-b/healthpy"><img alt="Coverage" src="https://img.shields.io/badge/coverage-100%25-brightgreen"></a>
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
-<a href="https://travis-ci.com/Colin-b/healthpy"><img alt="Number of tests" src="https://img.shields.io/badge/tests-128 passed-blue"></a>
+<a href="https://travis-ci.com/Colin-b/healthpy"><img alt="Number of tests" src="https://img.shields.io/badge/tests-136 passed-blue"></a>
 <a href="https://pypi.org/project/healthpy/"><img alt="Number of downloads" src="https://img.shields.io/pypi/dm/healthpy"></a>
 </p>
 
@@ -21,6 +21,7 @@ Create an health check endpoint on your REST API following [Health Check RFC](ht
   - [HTTP response status code](#http-response-status-code)
 - [Endpoint](#endpoint)
   - [Starlette](#starlette)
+  - [Flask-RestX](#flask-restx)
 
 ## Perform checks
 
@@ -146,7 +147,7 @@ An helper function is available to create a [starlette](https://www.starlette.io
 ```python
 from starlette.applications import Starlette
 import healthpy
-import healthpy.http
+import healthpy.httpx
 import healthpy.redis
 from healthpy.starlette import add_consul_health_endpoint
 
@@ -156,7 +157,7 @@ app = Starlette()
 
 async def health_check():
     # TODO Replace by your own checks.
-    status_1, checks_1 = healthpy.http.check("my external dependency", "http://url_to_check")
+    status_1, checks_1 = healthpy.httpx.check("my external dependency", "http://url_to_check")
     status_2, checks_2 = healthpy.redis.check("redis://redis_url", "key_to_check")
     return healthpy.status(status_1, status_2), {**checks_1, **checks_2}
 
@@ -165,6 +166,35 @@ add_consul_health_endpoint(app, health_check)
 ```
 
 Note: [starlette](https://pypi.python.org/pypi/starlette) module must be installed.
+
+### Flask-RestX
+
+An helper function is available to create a [Flask-RestX](https://flask-restx.readthedocs.io/en/latest/) endpoint for [Consul](https://www.consul.io/docs/agent/checks.html) health check.
+
+```python
+import flask
+import flask_restx
+import healthpy
+import healthpy.httpx
+import healthpy.redis
+from healthpy.flask_restx import add_consul_health_endpoint
+
+
+app = flask.Flask(__name__)
+api = flask_restx.Api(app)
+
+
+async def health_check():
+    # TODO Replace by your own checks.
+    status_1, checks_1 = healthpy.httpx.check("my external dependency", "http://url_to_check")
+    status_2, checks_2 = healthpy.redis.check("redis://redis_url", "key_to_check")
+    return healthpy.status(status_1, status_2), {**checks_1, **checks_2}
+
+# /health endpoint will call the health_check coroutine.
+add_consul_health_endpoint(api, health_check)
+```
+
+Note: [flask-restx](https://pypi.python.org/pypi/flask-restx) module must be installed.
 
 ## Testing
 
