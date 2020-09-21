@@ -15,7 +15,7 @@ def test_exception_health_check(mock_http_health_datetime, httpx_mock: HTTPXMock
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "No mock can be found for GET request on http://test/health.",
+                "output": "No response can be found for GET request on http://test/health",
                 "status": "fail",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -33,7 +33,7 @@ def test_exception_health_check_additional_keys(
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "No mock can be found for GET request on http://test/health.",
+                "output": "No response can be found for GET request on http://test/health",
                 "status": "fail",
                 "time": "2018-10-11T15:05:05.663979",
                 "custom": "test",
@@ -51,7 +51,7 @@ def test_exception_health_check_with_custom_status(
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "No mock can be found for GET request on http://test/health.",
+                "output": "No response can be found for GET request on http://test/health",
                 "status": "custom failure",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -69,7 +69,7 @@ def test_exception_health_check_as_warn(
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "No mock can be found for GET request on http://test/health.",
+                "output": "No response can be found for GET request on http://test/health",
                 "status": "warn",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -89,7 +89,7 @@ def test_exception_health_check_as_warn_even_with_custom_status(
         {
             "tests:health": {
                 "componentType": "http://test/health",
-                "output": "No mock can be found for GET request on http://test/health.",
+                "output": "No response can be found for GET request on http://test/health",
                 "status": "warn provided",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -434,8 +434,8 @@ def test_custom_http_error_status_health_check(
 def test_custom_failure_status_health_check(
     mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    def send_failure(*args, **kwargs):
-        raise httpx.NetworkError()
+    def send_failure(request, timeout):
+        raise httpx.NetworkError("", request=request)
 
     httpx_mock.add_callback(
         url="http://test/health", method="GET", callback=send_failure
@@ -460,8 +460,8 @@ def test_custom_failure_status_health_check(
 def test_custom_failure_status_exception_health_check(
     mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    def send_failure(*args, **kwargs):
-        raise httpx.NetworkError()
+    def send_failure(request, timeout):
+        raise httpx.NetworkError("", request=request)
 
     httpx_mock.add_callback(
         url="http://test/health", method="GET", callback=send_failure
@@ -629,7 +629,7 @@ def test_fail_status_when_server_is_down(
         {
             "tests:health": {
                 "componentType": "http://test/status",
-                "output": "No mock can be found for GET request on http://test/status.",
+                "output": "No response can be found for GET request on http://test/status",
                 "status": "fail",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -647,7 +647,7 @@ def test_fail_status_when_server_is_down_as_warn(
         {
             "tests:health": {
                 "componentType": "http://test/status",
-                "output": "No mock can be found for GET request on http://test/status.",
+                "output": "No response can be found for GET request on http://test/status",
                 "status": "warn",
                 "time": "2018-10-11T15:05:05.663979",
             }
@@ -668,7 +668,7 @@ def test_show_affected_endpoints_when_endpoint_throws_exception(
         {
             "tests:health": {
                 "componentType": "http://test/status",
-                "output": "No mock can be found for GET request on http://test/status.",
+                "output": "No response can be found for GET request on http://test/status",
                 "status": "warn",
                 "affectedEndpoints": ["/testroute/{userId}", "/status/{id}/idontexist"],
                 "time": "2018-10-11T15:05:05.663979",

@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.0] - 2020-09-21
+### Added
+- `healthpy.flask_restx.add_consul_health_endpoint` function to add a [Consul](https://www.consul.io/docs/agent/checks.html) health check endpoint to a [Flask-RestX](https://flask-restx.readthedocs.io/en/latest/) application.
+
+### Changed
+- From now on, Python 3.7 is the minimum supported version (no more support for Python 3.6)
+
 ## [1.11.1] - 2020-07-27
 ### Fixed
 - error_status_extracting is now used to extract the status to return in case of failure as well. (default to failure_status)
@@ -56,7 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Public release.
 
-[Unreleased]: https://github.com/Colin-b/healthpy/compare/v1.11.1...HEAD
+[Unreleased]: https://github.com/Colin-b/healthpy/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/Colin-b/healthpy/compare/v1.11.1...v1.12.0
 [1.11.1]: https://github.com/Colin-b/healthpy/compare/v1.11.0...v1.11.1
 [1.11.0]: https://github.com/Colin-b/healthpy/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/Colin-b/healthpy/compare/v1.9.0...v1.10.0

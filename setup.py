@@ -25,7 +25,6 @@ setup(
         "Natural Language :: English",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Topic :: Software Development :: Build Tools",
@@ -38,16 +37,18 @@ setup(
             # Used to mock requests HTTP responses
             "pytest-responses==0.4.*",
             # Used to mock httpx HTTP responses
-            "pytest-httpx==0.2.*",
+            "pytest-httpx==0.8.*",
             # Used to check redis health
             "redis==3.*",
             # Used to check starlette endpoint
             "starlette==0.13.*",
+            # Used to check flask-restx endpoint
+            "flask-restx==0.2.*",
             # Used to check coverage
             "pytest-cov==2.*",
         ]
     },
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     project_urls={
         "GitHub": "https://github.com/Colin-b/healthpy",
         "Changelog": "https://github.com/Colin-b/healthpy/blob/master/CHANGELOG.md",
