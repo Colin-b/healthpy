@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.0] - 2020-10-15
+### Added
+- `healthpy.flask_restx.add_health_endpoint` function to add a health check endpoint to a [Flask-RestX](https://flask-restx.readthedocs.io/en/latest/) application.
+- Explicit support for python `3.9`.
+
+### Changed
+- Follow `black` `20.8b1` formatting instead of the git master.
+
 ## [1.12.0] - 2020-09-21
 ### Added
 - `healthpy.flask_restx.add_consul_health_endpoint` function to add a [Consul](https://www.consul.io/docs/agent/checks.html) health check endpoint to a [Flask-RestX](https://flask-restx.readthedocs.io/en/latest/) application.
@@ -63,7 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Public release.
 
-[Unreleased]: https://github.com/Colin-b/healthpy/compare/v1.12.0...HEAD
+[Unreleased]: https://github.com/Colin-b/healthpy/compare/v1.13.0...HEAD
+[1.13.0]: https://github.com/Colin-b/healthpy/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/Colin-b/healthpy/compare/v1.11.1...v1.12.0
 [1.11.1]: https://github.com/Colin-b/healthpy/compare/v1.11.0...v1.11.1
 [1.11.0]: https://github.com/Colin-b/healthpy/compare/v1.10.0...v1.11.0

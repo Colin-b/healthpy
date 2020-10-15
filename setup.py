@@ -27,6 +27,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Software Development :: Build Tools",
     ],
     keywords=["health", "api", "http", "redis"],
@@ -37,7 +38,7 @@ setup(
             # Used to mock requests HTTP responses
             "pytest-responses==0.4.*",
             # Used to mock httpx HTTP responses
-            "pytest-httpx==0.8.*",
+            "pytest-httpx==0.10.*",
             # Used to check redis health
             "redis==3.*",
             # Used to check starlette endpoint

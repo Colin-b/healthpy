@@ -1,7 +1,5 @@
 import json
-import os
 
-import pytest
 from pytest_httpx import httpx_mock, HTTPXMock
 import httpx
 
@@ -434,7 +432,7 @@ def test_custom_http_error_status_health_check(
 def test_custom_failure_status_health_check(
     mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    def send_failure(request, timeout):
+    def send_failure(request, *args, **kwargs):
         raise httpx.NetworkError("", request=request)
 
     httpx_mock.add_callback(
@@ -460,7 +458,7 @@ def test_custom_failure_status_health_check(
 def test_custom_failure_status_exception_health_check(
     mock_http_health_datetime, httpx_mock: HTTPXMock
 ):
-    def send_failure(request, timeout):
+    def send_failure(request, *args, **kwargs):
         raise httpx.NetworkError("", request=request)
 
     httpx_mock.add_callback(
