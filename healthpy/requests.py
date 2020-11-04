@@ -7,7 +7,10 @@ from healthpy._http import _check, _is_json
 
 class _Request:
     def __init__(self, url: str, **args):
-        self.response = requests.get(url, timeout=args.pop("timeout", (1, 5)), **args)
+        with requests.Session() as session:
+            self.response = session.get(
+                url, timeout=args.pop("timeout", (1, 5)), **args
+            )
 
     def is_error(self) -> bool:
         return not self.response.ok
