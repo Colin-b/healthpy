@@ -7,8 +7,8 @@ from healthpy._http import _check, _is_json
 
 class _Request:
     def __init__(self, url: str, **args):
-        with httpx.Client(timeout=args.pop("timeout", (1, 5))) as client:
-            self.response = client.get(url, **args)
+        with httpx.Client(timeout=args.pop("timeout", (1, 5)), **args) as client:
+            self.response = client.get(url)
 
     def is_error(self) -> bool:
         return self.response.is_error
@@ -43,6 +43,7 @@ def check(
     Note that the response might be None as this is called to extract the default status in case of failure as well.
     :param affected_endpoints: List of endpoints affected if dependency is down. Default to None.
     :param additional_keys: Additional user defined keys to send in checks.
+    :param httpx_args: All other parameters will be provided to the httpx.Client instance.
     :return: A tuple with a string providing the status (amongst healthpy.*_status variable) and the "Checks object".
     Based on https://inadarei.github.io/rfc-healthcheck/
     """
