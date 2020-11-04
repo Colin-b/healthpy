@@ -7,8 +7,8 @@ from healthpy._http import _check, _is_json
 
 class _Request:
     def __init__(self, url: str, **args):
-        with httpx.Client() as client:
-            self.response = client.get(url, timeout=args.pop("timeout", (1, 5)), **args)
+        with httpx.Client(timeout=args.pop("timeout", (1, 5))) as client:
+            self.response = client.get(url, **args)
 
     def is_error(self) -> bool:
         return self.response.is_error
